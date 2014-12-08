@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" >
+    
+    <item
+        android:id="@+id/timer_icon"
+        android:icon="@drawable/timer"
+        android:title="@string/timer"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/login"
+        android:title="@string/login"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/fav"
+        android:title="@string/favourites"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/matches"
+        android:title="@string/timer"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/settings"
+        android:title="@string/settings"
+        app:showAsAction="never"/>
+</menu>

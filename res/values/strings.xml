@@ -4,5 +4,28 @@
     <string name="app_name">Kickr</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="edit_message">Enter username</string>
+    <string name="button_send">Login</string>
+    <string name="overflow">Overflow</string>
+    <string name="password">Password</string>
+    <string name="settings">Settings</string>
+    <string name="timer">Matches</string>
+    <string name="favourites">Favourites</string>
+    <string name="info">Information</string>
+    <string name="login">Login</string>
+    <string name="title_activity_attendee">MainActivity</string>
+    <string name="createMatch">Create Match</string>
+    <string name="createTeam">Create Team</string>
+    <string name="referee">Referee</string>
+    <string name="venue">Venue</string>
+    <string name="comp">Competition</string>
+    <string name="welcome">Welcome .....</string>
+    <string name="title_activity_teamplayers">MainActivity</string>
+    <string name="enterPlayers">Enter Players</string>
+    <string name="goalie">Goalkeeper</string>
+    <string name="rcb">Right Corner Back</string>
+    <string name="rwf">Right Wing Forward</string>
+    <string name="ff">Full Forward</string>
+    <string name="mf">Midfield</string>
 
 </resources>

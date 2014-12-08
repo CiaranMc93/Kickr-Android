@@ -1,11 +1,8 @@
 package com.example.kickr;
 
-import java.net.URI;
-
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,40 +11,27 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity {
+public class AttendeeActivity extends ActionBarActivity{
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.attendee);
 		
-		setUpMessageButton();
+		setUpMatchButton();
+		createTeamButton();
+		
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.main, menu);
-		//return true;
 		MenuInflater mif = getMenuInflater();
-		mif.inflate(R.menu.main_activity_action,menu);
+		mif.inflate(R.menu.attendee,menu);
 		return super.onCreateOptionsMenu(menu);
+		
 	}
-	
-	private void setUpMessageButton()
-	{
-		Button messageButton = (Button) findViewById(R.id.button1);
-		messageButton.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View v)
-			{
-				Toast.makeText(MainActivity.this, "You have logged in!", Toast.LENGTH_LONG).show();
-				
-				startActivity(new Intent(MainActivity.this, AttendeeActivity.class));
-			}
-		});
-	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -58,5 +42,36 @@ public class MainActivity extends ActionBarActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	private void setUpMatchButton()
+	{
+		Button nav = (Button) findViewById(R.id.button2);
+		nav.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v)
+			{
+				Toast.makeText(AttendeeActivity.this, "You created a match!", Toast.LENGTH_LONG).show();
+				
+				startActivity(new Intent(AttendeeActivity.this, MainActivity.class));
+				
+				finish();
+			}
+		});
+	}
+	
+	private void createTeamButton()
+	{
+		Button createPlayer = (Button)findViewById(R.id.createTeam);
+		createPlayer.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) 
+			{	
+				startActivity(new Intent(AttendeeActivity.this, TeamplayersActivity.class));
+				
+				finish();
+			}
+		});
 	}
 }
