@@ -44,6 +44,7 @@ public class AttendeeActivity extends ActionBarActivity{
 		return super.onOptionsItemSelected(item);
 	}
 	
+	//button to set up a match
 	private void setUpMatchButton()
 	{
 		Button nav = (Button) findViewById(R.id.button2);

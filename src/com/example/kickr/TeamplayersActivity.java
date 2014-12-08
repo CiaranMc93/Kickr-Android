@@ -47,6 +47,7 @@ public class TeamplayersActivity extends ActionBarActivity {
 				
 				JSONObject playersData = new JSONObject();
 				
+				//add the text to a JSON file
 				try 
 				{
 					playersData.put("Goalkeeper", goalie.getText());
