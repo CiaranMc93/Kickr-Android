@@ -1,8 +1,10 @@
 package com.example.kickr;
 
 import java.net.URI;
+import java.util.Timer;
 
 import android.support.v7.app.ActionBarActivity;
+import android.content.ClipData.Item;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +17,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
+	
+	Item login;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,7 @@ public class MainActivity extends ActionBarActivity {
 		MenuInflater mif = getMenuInflater();
 		mif.inflate(R.menu.main_activity_action,menu);
 		return super.onCreateOptionsMenu(menu);
+		
 	}
 	
 	private void setUpMessageButton()
@@ -53,10 +58,24 @@ public class MainActivity extends ActionBarActivity {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		switch (item.getItemId()) 
+		{
+		case R.id.login:
+			startActivity(new Intent(MainActivity.this, AttendeeActivity.class));
 			return true;
+		case R.id.fav:
+			startActivity(new Intent(MainActivity.this, AttendeeActivity.class));
+			return true;
+		case R.id.matches:
+			startActivity(new Intent(MainActivity.this, AttendeeActivity.class));
+			return true;
+		case R.id.settings:
+			startActivity(new Intent(MainActivity.this, AttendeeActivity.class));
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
 		}
-		return super.onOptionsItemSelected(item);
 	}
+	
+	//set up the items menu in the overflow tab
 }

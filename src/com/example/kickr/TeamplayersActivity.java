@@ -20,30 +20,39 @@ public class TeamplayersActivity extends ActionBarActivity {
 	EditText goalie;
 	EditText player;
 	EditText player2;
+	EditText player3;
+	EditText player4;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.teamplayers);
 		
+		//call the method that gets the edit texts
 		getPlayerName();
 		
 	}
 
+	//emethod to use the players name
 	private void getPlayerName() 
 	{	
+		//button 
 		Button createPlayers = (Button)findViewById(R.id.createPlayers);
+		//edit text values
 		goalie = (EditText)findViewById(R.id.player1);
 		player = (EditText)findViewById(R.id.player2);
 		player2 = (EditText)findViewById(R.id.player3);
+		player3 = (EditText)findViewById(R.id.player4);
+		player4 = (EditText)findViewById(R.id.player5);
 		
+		//on click
 		createPlayers.setOnClickListener(new View.OnClickListener()
 		{
 			
 			@Override
 			public void onClick(View v) 
 			{
-				Toast.makeText(TeamplayersActivity.this, "Players Entered = " + goalie.getText() + " " + player.getText() + " " + player2.getText(), Toast.LENGTH_LONG).show();
+				Toast.makeText(TeamplayersActivity.this, "Players Entered = " + goalie.getText() + " " + player.getText() + " " + player2.getText() + " " + player3.getText() + " " + player4.getText(), Toast.LENGTH_LONG).show();
 				
 				JSONObject playersData = new JSONObject();
 				
@@ -53,6 +62,8 @@ public class TeamplayersActivity extends ActionBarActivity {
 					playersData.put("Goalkeeper", goalie.getText());
 					playersData.put("Corner Back", player.getText());
 					playersData.put("Midfielder" , player2.getText());
+					playersData.put("Right Wing Forward", player3.getText());
+					playersData.put("Full Forward" , player4.getText());
 				} 
 				catch (JSONException e) 
 				{

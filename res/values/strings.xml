@@ -27,5 +27,8 @@
     <string name="rwf">Right Wing Forward</string>
     <string name="ff">Full Forward</string>
     <string name="mf">Midfield</string>
+    <string name="title_activity_match_updates">MatchUpdatesActivity</string>
+    <string name="title_activity_favourites">MainActivity</string>
+    <string name="title_activity_players">MainActivity</string>
 
 </resources>

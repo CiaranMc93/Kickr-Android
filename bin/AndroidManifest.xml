@@ -30,6 +30,18 @@
             android:name=".TeamplayersActivity"
             android:label="@string/title_activity_teamplayers" >
         </activity>
+        <activity
+            android:name=".MatchUpdatesActivity"
+            android:label="@string/title_activity_match_updates" >
+        </activity>
+        <activity
+            android:name=".FavouritesActivity"
+            android:label="@string/title_activity_favourites" >
+        </activity>
+        <activity
+            android:name=".PlayersActivity"
+            android:label="@string/title_activity_players" >
+        </activity>
     </application>
 
 </manifest>

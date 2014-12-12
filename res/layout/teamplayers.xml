@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:text="@string/goalie"
+        android:hint="@string/goalie"
         android:inputType="textPersonName" >
 
     </EditText>
@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:text="@string/rcb"
+        android:hint="@string/rcb"
         android:inputType="textPersonName" />
 
     <EditText
@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:text="@string/mf"
+        android:hint="@string/mf"
         android:inputType="textPersonName" />
 
     <EditText
@@ -34,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:text="@string/rwf"
+        android:hint="@string/rwf"
         android:inputType="textPersonName" />
 
     <EditText
@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:text="@string/ff"
+        android:hint="@string/ff"
         android:inputType="textPersonName" />
     
     <Button
