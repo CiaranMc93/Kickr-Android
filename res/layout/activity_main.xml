@@ -22,6 +22,12 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:text="@string/button_send" />
+    
+    <TextView 
+        android:id="@+id/result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_send" />
 
     <FrameLayout
         android:layout_width="match_parent"
