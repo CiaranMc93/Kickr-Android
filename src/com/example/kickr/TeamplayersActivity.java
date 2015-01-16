@@ -1,5 +1,16 @@
 package com.example.kickr;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,12 +49,6 @@ public class TeamplayersActivity extends ActionBarActivity {
 	{	
 		//button 
 		Button createPlayers = (Button)findViewById(R.id.createPlayers);
-		//edit text values
-		goalie = (EditText)findViewById(R.id.player1);
-		player = (EditText)findViewById(R.id.player2);
-		player2 = (EditText)findViewById(R.id.player3);
-		player3 = (EditText)findViewById(R.id.player4);
-		player4 = (EditText)findViewById(R.id.player5);
 		
 		//on click
 		createPlayers.setOnClickListener(new View.OnClickListener()
@@ -70,9 +75,6 @@ public class TeamplayersActivity extends ActionBarActivity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				System.out.println(playersData);
-				
 			}
 		});
 	}

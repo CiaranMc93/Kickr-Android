@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,13 +35,17 @@ public class MainActivity extends ActionBarActivity {
 	Item login;
 	TextView resultView;
 	
+	//login variable
+	EditText userName; 
+	EditText passWord;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		//setUpMessageButton();
+		setUpMessageButton();
 		
 		StrictMode.enableDefaults();
 		
@@ -67,9 +72,23 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public void onClick(View v)
 			{
-				Toast.makeText(MainActivity.this, "You have logged in!", Toast.LENGTH_LONG).show();
+				//String to holf username and password
+				String loginUser;
+				String loginPass;
 				
-				startActivity(new Intent(MainActivity.this, AttendeeActivity.class));
+				//get the login ids
+				userName = (EditText)findViewById(R.id.username);
+				passWord = (EditText)findViewById(R.id.password);
+				
+				//get the strings of the edit texts and display them.
+				loginUser = userName.getText().toString();
+				loginPass = passWord.getText().toString();
+				
+				
+				Toast.makeText(MainActivity.this, "You have logged in!", Toast.LENGTH_LONG).show();
+				Toast.makeText(MainActivity.this,"Username : " + loginUser + " Password : " + loginPass, Toast.LENGTH_LONG).show();
+				
+				//startActivity(new Intent(MainActivity.this, AttendeeActivity.class));
 			}
 		});
 	}
