@@ -1,34 +1,76 @@
 package com.example.kickr;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 
-public class FavouritesActivity extends ActionBarActivity {
 
+public class FavouritesActivity extends FragmentActivity implements ActionBar.TabListener {
+
+	ActionBar actionbar;
+	ViewPager viewpager;
+	FragmentPageAdapter ft;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.favourites);
+		
+		viewpager = (ViewPager) findViewById(R.id.pager);
+		ft = new FragmentPageAdapter(getSupportFragmentManager());
+		
+		actionbar = getActionBar();
+		
+		viewpager.setAdapter(ft);
+		
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionbar.addTab(actionbar.newTab().setText("Java").setTabListener(this));
+		actionbar.addTab(actionbar.newTab().setText("PHP").setTabListener(this));
+		actionbar.addTab(actionbar.newTab().setText(".NET").setTabListener(this));
+		
+		viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() 
+		{
+			
+			@Override
+			public void onPageSelected(int arg0) {
+				// TODO Auto-generated method stub
+				actionbar.setSelectedNavigationItem(arg0);
+				
+			}
+			
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.favourites, menu);
-		return true;
+	public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+		// TODO Auto-generated method stub
+		viewpager.setCurrentItem(tab.getPosition());
+		
+	}
+
+	@Override
+	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+		// TODO Auto-generated method stub
+		
 	}
 }
