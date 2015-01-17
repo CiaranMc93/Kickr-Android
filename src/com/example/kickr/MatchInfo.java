@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 
 
-public class FavouritesActivity extends FragmentActivity implements ActionBar.TabListener {
+public class MatchInfo extends FragmentActivity implements ActionBar.TabListener {
 
 	ActionBar actionbar;
 	ViewPager viewpager;

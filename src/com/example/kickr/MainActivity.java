@@ -89,7 +89,7 @@ public class MainActivity extends ActionBarActivity {
 				Toast.makeText(MainActivity.this,"Username : " + loginUser + " Password : " + loginPass, Toast.LENGTH_LONG).show();
 				
 				//startActivity(new Intent(MainActivity.this, AttendeeActivity.class));
-				startActivity(new Intent(MainActivity.this, FavouritesActivity.class));
+				startActivity(new Intent(MainActivity.this, MatchInfo.class));
 			}
 		});
 	}
@@ -105,13 +105,13 @@ public class MainActivity extends ActionBarActivity {
 			startActivity(new Intent(MainActivity.this, AttendeeActivity.class));
 			return true;
 		case R.id.fav:
-			startActivity(new Intent(MainActivity.this, FavouritesActivity.class));
+			startActivity(new Intent(MainActivity.this, MatchInfo.class));
 			return true;
 		case R.id.matches:
 			startActivity(new Intent(MainActivity.this, TeamplayersActivity.class));
 			return true;
 		case R.id.settings:
-			startActivity(new Intent(MainActivity.this, MatchUpdatesActivity.class));
+			startActivity(new Intent(MainActivity.this, Statistics.class));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

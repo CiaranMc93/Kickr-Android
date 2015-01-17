@@ -18,9 +18,6 @@ public class AttendeeActivity extends ActionBarActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.attendee);
 		
-		setUpMatchButton();
-		createTeamButton();
-		
 	}
 
 	@Override
@@ -42,37 +39,5 @@ public class AttendeeActivity extends ActionBarActivity{
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-	
-	//button to set up a match
-	private void setUpMatchButton()
-	{
-		Button nav = (Button) findViewById(R.id.button2);
-		nav.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View v)
-			{
-				Toast.makeText(AttendeeActivity.this, "You created a match!", Toast.LENGTH_LONG).show();
-				
-				startActivity(new Intent(AttendeeActivity.this, MainActivity.class));
-				
-				finish();
-			}
-		});
-	}
-	
-	private void createTeamButton()
-	{
-		Button createPlayer = (Button)findViewById(R.id.createTeam);
-		createPlayer.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) 
-			{	
-				startActivity(new Intent(AttendeeActivity.this, TeamplayersActivity.class));
-				
-				finish();
-			}
-		});
 	}
 }

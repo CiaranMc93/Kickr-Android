@@ -11,13 +11,13 @@
         android:layout_height="0dip"
         android:layout_weight="1"
         android:orientation="horizontal" 
-        android:background="#0B9AE2"> 
-
-        <Button 
-            android:id="@+id/play_button"
+        android:background="#0B9AE2">
+        
+        <ImageView
+            android:id="@+id/pitchImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Test" />
+            android:src="@drawable/pitch" />
 
     </LinearLayout>
 

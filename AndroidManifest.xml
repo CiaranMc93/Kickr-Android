@@ -33,11 +33,11 @@
             android:label="@string/title_activity_teamplayers" >
         </activity>
         <activity
-            android:name=".MatchUpdatesActivity"
+            android:name=".Statistics"
             android:label="@string/title_activity_match_updates" >
         </activity>
         <activity
-            android:name=".FavouritesActivity"
+            android:name=".MatchInfo"
             android:label="@string/title_activity_favourites" >
         </activity>
         <activity

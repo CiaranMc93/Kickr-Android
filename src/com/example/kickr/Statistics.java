@@ -11,12 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 
-public class MatchUpdatesActivity extends ActionBarActivity {
+public class Statistics extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.matchupdates);
+		
 		if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
