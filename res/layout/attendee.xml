@@ -8,59 +8,73 @@
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
-        android:background="#0B9AE2"
         android:gravity="center"
         android:orientation="horizontal" >
 
-        <ImageView
-            android:id="@+id/pitchImage"
+        <Button
+            android:id="@+id/startMatch"
             android:layout_width="wrap_content"
-            android:layout_height="196dp"
-            android:layout_weight="0.36"
-            android:src="@drawable/pitch" />
-
+            android:layout_height="78dp"
+            android:background="@drawable/ic_action_play" 
+            android:text="@string/start"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
     </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="1"
-        >
+        android:layout_weight="1" >
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/team1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/textView3"
-            android:text="Medium Text"
+            android:text="Team1"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/team2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:text="Medium Text"
+            android:text="Team2"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
+        <ImageView
+            android:id="@+id/swipeCount"
+            android:layout_width="wrap_content"
+            android:layout_height="196dp"
+            android:layout_alignParentTop="true"
+            android:layout_weight="0.36"
+            android:src="@drawable/no0" />
+
+        <Button
+            android:id="@+id/pauseButton"
+            android:layout_width="90dp"
+            android:layout_height="45dp"
+            android:layout_alignBottom="@+id/swipeCount"
+            android:layout_alignParentRight="true"
+            android:text="@string/pauseButtonLabel" />
+
+
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/timerValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_alignTop="@+id/pauseButton"
+            android:text="@string/timerVal"
+            android:textSize="40sp" />
+
+        <Button
+            android:id="@+id/butt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/pauseButton"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="44dp"
+            android:text="Button" />
 
     </RelativeLayout>
 
