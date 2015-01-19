@@ -6,9 +6,11 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuItem;
 
 
-public class MatchInfo extends FragmentActivity implements ActionBar.TabListener {
+public class TeamOverall extends FragmentActivity implements ActionBar.TabListener {
 
 	ActionBar actionbar;
 	ViewPager viewpager;
@@ -27,9 +29,9 @@ public class MatchInfo extends FragmentActivity implements ActionBar.TabListener
 		viewpager.setAdapter(ft);
 		
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		actionbar.addTab(actionbar.newTab().setText("Java").setTabListener(this));
-		actionbar.addTab(actionbar.newTab().setText("PHP").setTabListener(this));
-		actionbar.addTab(actionbar.newTab().setText(".NET").setTabListener(this));
+		actionbar.addTab(actionbar.newTab().setText("Team Form").setTabListener(this));
+		actionbar.addTab(actionbar.newTab().setText("Line-Up").setTabListener(this));
+		actionbar.addTab(actionbar.newTab().setText("Statistics").setTabListener(this));
 		
 		viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() 
 		{

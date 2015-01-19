@@ -3,9 +3,13 @@ package com.example.kickr;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class FragmentPageAdapter extends FragmentPagerAdapter {
 
+	//dynamic team name name
+	String team_name = "O'Dempseys";
 	
 	public FragmentPageAdapter(FragmentManager fm) {
 		super(fm);
@@ -18,11 +22,11 @@ public class FragmentPageAdapter extends FragmentPagerAdapter {
 		switch(arg0)
 		{
 		case 0: 
-			return new javaFragment();
+			return new TeamForm();
 		case 1:
-			return new PhpFragment();
+			return new TeamStats();
 		case 2: 
-			return new DotnetFragment();
+			return new LineUpInformation();
 		default:
 			break;
 		}

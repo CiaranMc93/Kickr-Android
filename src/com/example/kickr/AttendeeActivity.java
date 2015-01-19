@@ -24,22 +24,27 @@ public class AttendeeActivity extends ActionBarActivity{
 	//count variable
 	int count = 0;
 	
+	//counter logic
 	private Button pauseButton;
 
+	//display the time
 	private TextView timerValue;
-
 	private long startTime = 0L;
 
+	//handle the time
 	private Handler customHandler = new Handler();
 
+	//time logic
 	long timeInMilliseconds = 0L;
 	long timeSwapBuff = 0L;
 	long updatedTime = 0L;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.attendee);
+		
 		
 		timerValue = (TextView) findViewById(R.id.timerValue);
 		
@@ -50,6 +55,7 @@ public class AttendeeActivity extends ActionBarActivity{
 		String team1 = "O'Dempseys";
 		String team2 = "Mountmellick";
 		
+		//set the text of the teams
 		setText(team1,team2);
 		
 	}
@@ -150,11 +156,13 @@ public class AttendeeActivity extends ActionBarActivity{
 	    
 	}
 	
+	//run the timer
 	private Runnable updateTimerThread = new Runnable() 
 	{
 		public void run() 
 		{
 
+			//milliseconds calculation
 			timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
 
 			updatedTime = timeSwapBuff + timeInMilliseconds;
@@ -163,9 +171,17 @@ public class AttendeeActivity extends ActionBarActivity{
 			int mins = secs / 60;
 			secs = secs % 60;
 			int milliseconds = (int) (updatedTime % 1000);
+			//update the display string
 			timerValue.setText("" + mins + ":"
 					+ String.format("%02d", secs) + ":"
 					+ String.format("%03d", milliseconds));
+			
+			if(secs == 15)
+			{
+				Toast.makeText(AttendeeActivity.this,"15 Secs",Toast.LENGTH_LONG).show();
+				
+			}
+			
 			customHandler.postDelayed(this, 0);
 			
 			

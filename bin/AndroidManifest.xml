@@ -37,7 +37,7 @@
             android:label="@string/title_activity_match_updates" >
         </activity>
         <activity
-            android:name=".MatchInfo"
+            android:name=".TeamOverall"
             android:label="@string/title_activity_favourites" >
         </activity>
         <activity
