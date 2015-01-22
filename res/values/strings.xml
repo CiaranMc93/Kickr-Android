@@ -18,7 +18,7 @@
     <string name="referee">Referee</string>
     <string name="venue">Venue</string>
     <string name="comp">Competition</string>
-    <string name="welcome">Welcome .....</string>
+    <string name="livematches">Live Matches</string>
     <string name="enterPlayers">Enter Players</string>
     <string name="goalie">Goalkeeper</string>
     <string name="rcb">Right Corner Back</string>
@@ -29,10 +29,12 @@
     <string name="title_activity_match_updates">Kickr</string>
     <string name="title_activity_favourites">Kickr</string>
     <string name="title_activity_players">Kickr</string>
-        <string name="title_activity_teamplayers">Kickr</string>
+    <string name="title_activity_teamplayers">Kickr</string>
     <string name="start">Start Match</string>
     <string name="timerVal">00:00:00</string>
     <string name="resetButtonLabel">Reset</string>
     <string name="pauseButtonLabel">Pause</string>
+    <string name="players">Players</string>
+    <string name="fixtures">Fixtures</string>
 
 </resources>

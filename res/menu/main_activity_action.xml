@@ -11,15 +11,11 @@
         android:title="@string/login"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/fixtures"
+        android:title="@string/fixtures"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/fav"
         android:title="@string/favourites"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/matches"
-        android:title="@string/timer"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/settings"
-        android:title="@string/settings"
         app:showAsAction="never"/>
 </menu>

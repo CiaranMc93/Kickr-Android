@@ -1,25 +1,15 @@
 package com.example.kickr;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import android.support.v7.app.ActionBarActivity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AttendeeActivity extends ActionBarActivity{
+public class AttendeeActivity extends Base_Activity{
 	
 	//count variable
 	int count = 0;
@@ -57,15 +47,6 @@ public class AttendeeActivity extends ActionBarActivity{
 		
 		//set the text of the teams
 		setText(team1,team2);
-		
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		MenuInflater mif = getMenuInflater();
-		mif.inflate(R.menu.attendee,menu);
-		return super.onCreateOptionsMenu(menu);
 		
 	}
 	
@@ -131,18 +112,6 @@ public class AttendeeActivity extends ActionBarActivity{
 			}
 		});
 	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
 	
 	//change the text for each team home and away
 	public void setText(String team1, String team2)
@@ -182,9 +151,7 @@ public class AttendeeActivity extends ActionBarActivity{
 				
 			}
 			
-			customHandler.postDelayed(this, 0);
-			
-			
+			customHandler.postDelayed(this, 0);	
 		}
 
 	};
