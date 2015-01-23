@@ -24,9 +24,11 @@ import android.widget.Toast;
 
 public class LoginActivity extends Base_Activity 
 {
+	//edit text variables
 	EditText username;
 	EditText password;
 	
+	//textview results
 	TextView result;
 	
 	
@@ -68,8 +70,7 @@ public class LoginActivity extends Base_Activity
 		try{
             
 			String link = "http://ciaranmcmanus.hostei.com/login.php?username="+ username + "&password=" + password;
-
-			Log.w("Link: ", link);
+			
 			URL url = new URL(link);
 			HttpClient client = new DefaultHttpClient();
 			HttpGet request = new HttpGet();
@@ -90,12 +91,25 @@ public class LoginActivity extends Base_Activity
 				break;
 			}
 			
-			String loginResult = sb.toString();
-
+			//close the buffer
 			in.close();
-				
-			result.setText(loginResult);
 			
+			//get array of results that come back
+			JSONArray jsonRoot = new JSONArray(sb.toString());
+			//get the first object of the array
+			JSONObject rootOBJ = jsonRoot.getJSONObject(0);
+			//get the string of the username
+			String user = rootOBJ.getString("Username");
+			//set the text
+			if(sb.length() > 0)
+			{
+				result.setText(user);
+			}
+			else
+			{
+				result.setText("Incorrect Login");
+			}
+
       }catch(Exception e)
 		{
          Log.d("Exception: " + e.getMessage(),"String");

@@ -5,7 +5,7 @@
         android:id="@+id/timer_icon"
         android:icon="@drawable/timer"
         android:title="@string/timer"
-        app:showAsAction="ifRoom"/>
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/login"
         android:title="@string/login"
