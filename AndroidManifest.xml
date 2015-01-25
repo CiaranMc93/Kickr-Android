@@ -56,6 +56,10 @@
             android:name=".LiveMatches"
             android:label="@string/livematches" >
         </activity>
+        <activity
+            android:name=".FixtureInfoActivity"
+            android:label="@string/fixtureInfo" >
+        </activity>
     </application>
 
 </manifest>

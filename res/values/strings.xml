@@ -36,5 +36,11 @@
     <string name="pauseButtonLabel">Pause</string>
     <string name="players">Players</string>
     <string name="fixtures">Fixtures</string>
+    <string name="fixtureInfo">Fixture Information</string>
+    <string name="matchId">Fixture ID</string>
+    <string name="managers">Managers</string>
+    <string name="matchDate_Time">Date and Time</string>
+    <string name="comp_info">Competition</string>
+    <string name="matchTeams">Teams</string>
 
 </resources>

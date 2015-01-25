@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:gravity="fill_vertical">"
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+         >
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center|top"
+            android:layout_marginBottom="20dp"
+            android:background="#333399"
+            android:minHeight="80dp">
+
+            <TextView
+                android:id="@+id/matchTeams"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/matchTeams"
+                android:textColor="#FFFFFF"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center|top" 
+            android:layout_marginBottom="20dp" >
+
+            <TextView
+                android:id="@+id/league_Info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/comp_info"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:gravity="center|top" 
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:id="@+id/matchDate_Time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/matchDate_Time"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </TableRow>
+         <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:gravity="center|top"
+            android:layout_marginBottom="20dp" >
+
+            <TextView
+                android:id="@+id/Referee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/referee"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </TableRow>
+        
+          <TableRow
+            android:id="@+id/tableRow5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center|top" 
+            android:layout_marginBottom="20dp" >
+
+            <TextView
+                android:id="@+id/venue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/venue"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </TableRow>
+         
+    </TableLayout>
+
+</LinearLayout>

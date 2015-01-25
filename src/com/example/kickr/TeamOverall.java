@@ -17,7 +17,7 @@ public class TeamOverall extends FragmentActivity implements ActionBar.TabListen
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.favourites);
+		setContentView(R.layout.team_overall);
 		
 		viewpager = (ViewPager) findViewById(R.id.pager);
 		ft = new FragmentPageAdapter(getSupportFragmentManager());
