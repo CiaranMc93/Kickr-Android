@@ -104,8 +104,8 @@ public class Fixtures extends Base_Activity
 				
 				//get the specific object in the JSON
 				JSONObject json = jArray.getJSONObject(i);
-				home = json.getString("Away");
-				away = json.getString("Home");
+				home = json.getString("Home");
+				away = json.getString("Away");
 				
 				// set up the dynamic buttons
 				Button btn = new Button(this);
@@ -122,10 +122,6 @@ public class Fixtures extends Base_Activity
 					@Override
 					public void onClick(View v) 
 					{
-						Toast.makeText(Fixtures.this,"Button " + v.getId() + " clicked",Toast.LENGTH_SHORT).show();
-						
-						//go to the fixture page
-						startActivity(new Intent(Fixtures.this, FixtureInfoActivity.class));
 						//need to pass the match information to the fixture information screen
 						try 
 						{
@@ -138,7 +134,14 @@ public class Fixtures extends Base_Activity
 							String comp = (String)json.get("Competition");
 							
 							//pass the match id to the fixture information
-							new FixtureInfoActivity(home,away,venue,dateTime,referee,comp);	
+							Intent i = new Intent(getApplicationContext(), FixtureInfoActivity.class);
+							i.putExtra("Home",home);
+							i.putExtra("Away",away);
+							i.putExtra("Referee",referee);
+							i.putExtra("Competition",comp);
+							i.putExtra("Venue",venue);
+							i.putExtra("Date and Time", dateTime);
+							startActivity(i);
 						} 
 						catch (JSONException e) 
 						{

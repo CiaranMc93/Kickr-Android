@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:id="@+id/table1"
          >
 
         <TableRow
@@ -20,14 +21,35 @@
             android:background="#333399"
             android:minHeight="80dp">
 
-            <TextView
-                android:id="@+id/matchTeams"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/matchTeams"
-                android:textColor="#FFFFFF"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:layout_gravity="center" >
+
+                <Button
+                    android:id="@+id/homeBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home" 
+                    android:background="#333399"
+                    android:textColor="#FFFFFF"/>
+
+                <TextView
+                    android:id="@+id/vs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vs"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <Button
+                    android:id="@+id/awayBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/away" 
+                    android:background="#333399"
+                    android:textColor="#FFFFFF"/>
+
+            </LinearLayout>
 
         </TableRow>
 

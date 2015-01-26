@@ -42,5 +42,8 @@
     <string name="matchDate_Time">Date and Time</string>
     <string name="comp_info">Competition</string>
     <string name="matchTeams">Teams</string>
+    <string name="vs">vs.</string>
+    <string name="home">Home</string>
+    <string name="away">Away</string>
 
 </resources>

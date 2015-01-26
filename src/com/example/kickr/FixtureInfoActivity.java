@@ -22,17 +22,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class FixtureInfoActivity extends Base_Activity {
-
-	//create the text view variable
-	TextView fixture;
-	TextView location;
-	TextView dateAndTime;
-	TextView competition;
-	TextView referee;
 	
 	String homeTeam;
 	String awayTeam;
@@ -41,45 +36,54 @@ public class FixtureInfoActivity extends Base_Activity {
 	String ref;
 	String comp;
 	
+	Button home;
+	Button away;
+	
 	//create JSONarray 
 	JSONArray jArray = new JSONArray();
 	
 	//create string fixtureInfo
 	String fixtureInfo;
 	
-	public FixtureInfoActivity(String Home,String Away, String Venue,String Date,String Referee,String Competition) {
-		// TODO Auto-generated constructor stub
-		this();
-		setMatchId(Home,Away,Venue,Date,Referee,Competition);
-	}
-	
 	public FixtureInfoActivity() {
 		// TODO Auto-generated constructor stub
-	}
-	
-	//getter and setter
-	public void setMatchId(String home, String away, String venue, String date, String referee, String competition)
-	{
-		homeTeam = home;
-		awayTeam = away;
-		loc = venue;
-		dateTime = date;
-		ref = referee;
-		comp = competition;
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.fixture_info);
+		setContentView(R.layout.fixture_info);	
 		
-		//create all the appropriate text views
-		fixture = (TextView) findViewById(R.id.matchTeams);
-		location = (TextView) findViewById(R.id.venue);
-		dateAndTime = (TextView) findViewById(R.id.matchDate_Time);
-		competition = (TextView) findViewById(R.id.league_Info);
-		referee = (TextView) findViewById(R.id.Referee);	
+		//TextView fixture = (TextView) findViewById(R.id.matchTeams);
+		TextView location = (TextView) findViewById(R.id.venue);
+		TextView dateAndTime = (TextView) findViewById(R.id.matchDate_Time);
+		TextView competition = (TextView) findViewById(R.id.league_Info);
+		TextView referee = (TextView) findViewById(R.id.Referee);
+		
+		home = (Button) findViewById(R.id.homeBtn);
+		away = (Button) findViewById(R.id.awayBtn);
+		
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) 
+		{
+			//get the values from the previous activity
+		    homeTeam = extras.getString("Home");
+		    awayTeam = extras.getString("Away");
+		    loc = extras.getString("Venue");
+		    dateTime = extras.getString("Date and Time");
+		    ref = extras.getString("Referee");
+		    comp = extras.getString("Competition");
+		    
+		    //set the text views to be equal to the previous acitivities values
+		    location.setText(loc);
+		    dateAndTime.setText(dateTime);
+		    competition.setText(comp);
+		    referee.setText(ref);
+		    //set the text of the buttons
+		    home.setText(homeTeam);
+		    away.setText(awayTeam);
+		}
 		
 	}
 	
