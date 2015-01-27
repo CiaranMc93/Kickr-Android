@@ -20,7 +20,7 @@
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name=".AttendeeActivity"
+            android:name=".UpdateMatchStats"
             android:label="@string/app_name" >
         </activity>
         <activity

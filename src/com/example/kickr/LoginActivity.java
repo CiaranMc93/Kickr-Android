@@ -67,6 +67,9 @@ public class LoginActivity extends Base_Activity
 	
 	public void login(String username, String password)
 	{
+		Boolean loggedIn;
+		String loginSuccess = "";
+		
 		try{
             
 			String link = "http://ciaranmcmanus.hostei.com/login.php?username="+ username + "&password=" + password;
@@ -100,20 +103,30 @@ public class LoginActivity extends Base_Activity
 			JSONObject rootOBJ = jsonRoot.getJSONObject(0);
 			//get the string of the username
 			String user = rootOBJ.getString("Username");
-			//set the text
-			if(sb.length() > 0)
+			
+			loggedIn = true;
+			
+			if(loggedIn == true)
 			{
-				result.setText(user);
-			}
-			else
-			{
-				result.setText("Incorrect Login");
+				loginSuccess = "Logged in Successfully";
+				result.setText(loginSuccess);
+				
+				//start the attendee acitivity intent and send in the username
 			}
 
-      }catch(Exception e)
+		}
+		catch (Exception e) 
 		{
-         Log.d("Exception: " + e.getMessage(),"String");
-      }
+			Log.d("Exception: " + e.getMessage(), "String");
+			loggedIn = false;
+
+			if (loggedIn == false) 
+			{
+				loginSuccess = "Unsuccessful Login";
+				result.setText(loginSuccess);
+			}
+
+		}
 	}
 	
 }

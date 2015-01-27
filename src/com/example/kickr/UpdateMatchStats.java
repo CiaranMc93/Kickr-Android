@@ -3,13 +3,21 @@ package com.example.kickr;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v4.view.GestureDetectorCompat;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.GestureDetector.OnDoubleTapListener;
+import android.view.GestureDetector.OnGestureListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AttendeeActivity extends Base_Activity{
+public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListener, OnGestureListener {
+
+	private static final String DEBUG_TAG = "Gestures";
+	private GestureDetectorCompat mDetector;
 	
 	//count variable
 	int count = 0;
@@ -47,6 +55,14 @@ public class AttendeeActivity extends Base_Activity{
 		
 		//set the text of the teams
 		setText(team1,team2);
+		
+		// Instantiate the gesture detector with the
+		// application context and an implementation of
+		// GestureDetector.OnGestureListener
+		mDetector = new GestureDetectorCompat(this, this);
+		// Set the gesture detector as the double tap
+		// listener.
+		mDetector.setOnDoubleTapListener(this);
 		
 	}
 	
@@ -147,7 +163,7 @@ public class AttendeeActivity extends Base_Activity{
 			
 			if(secs == 15)
 			{
-				Toast.makeText(AttendeeActivity.this,"15 Secs",Toast.LENGTH_LONG).show();
+				Toast.makeText(UpdateMatchStats.this,"15 Secs",Toast.LENGTH_LONG).show();
 				
 			}
 			
@@ -155,5 +171,77 @@ public class AttendeeActivity extends Base_Activity{
 		}
 
 	};
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		this.mDetector.onTouchEvent(event);
+		// Be sure to call the superclass implementation
+		return super.onTouchEvent(event);
+	}
+
+	@Override
+	public boolean onDown(MotionEvent event) {
+		//Log.d(DEBUG_TAG, "onDown: " + event.toString());
+		return true;
+	}
+
+	@Override
+	public boolean onFling(MotionEvent event1, MotionEvent event2,
+			float velocityX, float velocityY) 
+	{
+		if(velocityX > 0 && velocityY > 0)
+		{
+			String plus = "right";
+			Log.d(DEBUG_TAG, "onFling: " + plus);
+		}
+		else if(velocityX < 0 && velocityY < 0)
+		{
+			String minus = "left";
+			Log.d(DEBUG_TAG, "onFling: " + minus);
+		}
+		//Log.d(DEBUG_TAG, "onFling: " + event1.toString() + event2.toString());
+		return true;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent event) {
+		Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
+	}
+
+	@Override
+	public void onShowPress(MotionEvent event) {
+		//Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent event) {
+		//Log.d(DEBUG_TAG, "onSingleTapUp: " + event.toString());
+		return true;
+	}
+
+	@Override
+	public boolean onDoubleTap(MotionEvent event) {
+		Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
+		return true;
+	}
+
+	@Override
+	public boolean onDoubleTapEvent(MotionEvent event) {
+		//Log.d(DEBUG_TAG, "onDoubleTapEvent: " + event.toString());
+		return true;
+	}
+
+	@Override
+	public boolean onSingleTapConfirmed(MotionEvent event) {
+		//Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + event.toString());
+		return true;
+	}
+	
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+			float distanceY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

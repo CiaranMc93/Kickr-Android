@@ -1,34 +1,14 @@
 package com.example.kickr;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.ActionBar.LayoutParams;
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class FixtureInfoActivity extends Base_Activity {
+public class FixtureInfoActivity extends Base_Activity 
+{
 	
+	//strings for the team information
 	String homeTeam;
 	String awayTeam;
 	String loc;
@@ -36,6 +16,7 @@ public class FixtureInfoActivity extends Base_Activity {
 	String ref;
 	String comp;
 	
+	//buttons for home and away
 	Button home;
 	Button away;
 	
@@ -61,9 +42,11 @@ public class FixtureInfoActivity extends Base_Activity {
 		TextView competition = (TextView) findViewById(R.id.league_Info);
 		TextView referee = (TextView) findViewById(R.id.Referee);
 		
+		//create the buttons
 		home = (Button) findViewById(R.id.homeBtn);
 		away = (Button) findViewById(R.id.awayBtn);
 		
+		//a bundle with all the variables from the previous intent
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) 
 		{
@@ -76,10 +59,10 @@ public class FixtureInfoActivity extends Base_Activity {
 		    comp = extras.getString("Competition");
 		    
 		    //set the text views to be equal to the previous acitivities values
-		    location.setText(loc);
-		    dateAndTime.setText(dateTime);
-		    competition.setText(comp);
-		    referee.setText(ref);
+		    location.setText("Venue: " + loc);
+		    dateAndTime.setText("Date and Time: " + dateTime);
+		    competition.setText("Competition: " + comp);
+		    referee.setText("Referee: " + ref);
 		    //set the text of the buttons
 		    home.setText(homeTeam);
 		    away.setText(awayTeam);
