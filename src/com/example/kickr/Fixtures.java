@@ -24,6 +24,7 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -116,15 +117,22 @@ public class Fixtures extends Base_Activity
 				il.addView(btn);
 				il.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
 				
+				//add a divider to show the buttons
+				TextView divider = new TextView(this);
+				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+				divider.setLayoutParams(lp);
+				divider.setBackgroundColor(Color.parseColor("#333399"));
+				il.addView(divider);
+				
 
 				btn.setOnClickListener(new OnClickListener() {
-
 					@Override
 					public void onClick(View v) 
 					{
 						//need to pass the match information to the fixture information screen
 						try 
 						{
+							//get all the information needed to be sent to the next acitivity
 							JSONObject json = jArray.getJSONObject(v.getId());
 							String home = (String)json.get("Home");
 							String referee = (String)json.get("Referee");
@@ -141,6 +149,7 @@ public class Fixtures extends Base_Activity
 							i.putExtra("Competition",comp);
 							i.putExtra("Venue",venue);
 							i.putExtra("Date and Time", dateTime);
+							//start activity and pass in the bundle of information
 							startActivity(i);
 						} 
 						catch (JSONException e) 

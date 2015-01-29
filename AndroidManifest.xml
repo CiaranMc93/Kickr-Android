@@ -60,6 +60,10 @@
             android:name=".FixtureInfoActivity"
             android:label="@string/fixtureInfo" >
         </activity>
+        <activity
+            android:name=".EnterMatchInfo"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>

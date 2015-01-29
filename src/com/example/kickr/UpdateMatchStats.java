@@ -19,6 +19,17 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	private static final String DEBUG_TAG = "Gestures";
 	private GestureDetectorCompat mDetector;
 	
+	//count swipe functionality
+	int countRightSwipes;
+	int countLeftSwipes;
+	
+	//Set strings to be the home team and the away team
+	String team1 = "O'Dempseys";
+	String team2 = "Mountmellick";
+	
+	//swipe count image
+	Button swipeUpdate;
+	
 	//count variable
 	int count = 0;
 	
@@ -41,17 +52,14 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.attendee);
+		setContentView(R.layout.update_match_stats);
 		
 		
 		timerValue = (TextView) findViewById(R.id.timerValue);
+		swipeUpdate = (Button) findViewById(R.id.updateUser);
 		
 		//change the image
 		setUpMessageButton();
-		
-		//Set strings to be the home team and the away team
-		String team1 = "O'Dempseys";
-		String team2 = "Mountmellick";
 		
 		//set the text of the teams
 		setText(team1,team2);
@@ -69,38 +77,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	//functionality to control activities based on gesture count
 	private void setUpMessageButton()
 	{
-		//button functionality 
-		Button messageButton = (Button) findViewById(R.id.butt);
-		messageButton.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View v)
-			{			
-				//get the id of the image
-				ImageView imageView = (ImageView) findViewById(R.id.swipeCount);
-				
-				//count the number of swipes 
-				count++;
-				
-				//counts the number of swipes in play
-				if(count == 1)
-				{
-					imageView.setImageResource(R.drawable.no1);
-				}
-				else if(count == 2)
-				{
-					imageView.setImageResource(R.drawable.no2);
-				}
-				else if(count == 3)
-				{
-					imageView.setImageResource(R.drawable.no1);
-				}
-				else if(count == 4)
-				{
-					imageView.setImageResource(R.drawable.no0);
-					count = 0;
-				}
-			}
-		});
 		
 		//button functionality 
 		final Button playButton = (Button) findViewById(R.id.startMatch);
@@ -163,7 +139,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			
 			if(secs == 15)
 			{
-				Toast.makeText(UpdateMatchStats.this,"15 Secs",Toast.LENGTH_LONG).show();
+				Toast.makeText(UpdateMatchStats.this,"15 Secs",Toast.LENGTH_SHORT).show();
 				
 			}
 			
@@ -191,13 +167,32 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	{
 		if(velocityX > 0 && velocityY > 0)
 		{
-			String plus = "right";
-			Log.d(DEBUG_TAG, "onFling: " + plus);
+			countLeftSwipes = 0;
+			countRightSwipes++;
+			
+			if(countRightSwipes == 1)
+			{
+				swipeUpdate.setText(team1 + " in possession");
+			}
+			else if(countRightSwipes == 2)
+			{
+				swipeUpdate.setText(team1 + " is attacking");
+			}
 		}
 		else if(velocityX < 0 && velocityY < 0)
 		{
-			String minus = "left";
-			Log.d(DEBUG_TAG, "onFling: " + minus);
+			countRightSwipes = 0;
+			
+			countLeftSwipes++;
+			
+			if(countLeftSwipes == 1)
+			{
+				swipeUpdate.setText(team2 + " in possession");
+			}
+			else if(countLeftSwipes ==2)
+			{
+				swipeUpdate.setText(team2 + " is attacking");
+			}
 		}
 		//Log.d(DEBUG_TAG, "onFling: " + event1.toString() + event2.toString());
 		return true;
@@ -205,7 +200,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 
 	@Override
 	public void onLongPress(MotionEvent event) {
-		Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
+		Toast.makeText(UpdateMatchStats.this,"Handle Subs",Toast.LENGTH_SHORT).show();
 	}
 
 	@Override

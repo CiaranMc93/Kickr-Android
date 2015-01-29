@@ -11,7 +11,7 @@ public class TeamStats extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState){
-			return inflater.inflate(R.layout.lineup_layout,container,false);
+			return inflater.inflate(R.layout.team_stats_layout,container,false);
 		
 	}
 }

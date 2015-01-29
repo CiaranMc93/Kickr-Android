@@ -1,7 +1,10 @@
 package com.example.kickr;
 
 import org.json.JSONArray;
+
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -67,6 +70,26 @@ public class FixtureInfoActivity extends Base_Activity
 		    home.setText(homeTeam);
 		    away.setText(awayTeam);
 		}
+		
+		home.setOnClickListener(new View.OnClickListener() 
+		{
+			public void onClick(View v) {
+				// Perform action on click
+
+				startActivity(new Intent(FixtureInfoActivity.this,TeamOverall.class));
+				
+			}
+		});
+		
+		away.setOnClickListener(new View.OnClickListener() 
+		{
+			public void onClick(View v) {
+				// Perform action on click
+
+				startActivity(new Intent(FixtureInfoActivity.this,TeamOverall.class));
+				
+			}
+		});
 		
 	}
 	

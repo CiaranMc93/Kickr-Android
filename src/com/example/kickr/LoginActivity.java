@@ -12,13 +12,16 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.app.ActionBar.LayoutParams;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,24 +31,19 @@ public class LoginActivity extends Base_Activity
 	EditText username;
 	EditText password;
 	
-	//textview results
-	TextView result;
-	
-	
+	Boolean loginTrue = false;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
 		
-		
 		StrictMode.enableDefaults();
 		
 		//get the editText ids
 		username = (EditText) findViewById(R.id.username);
 		password = (EditText) findViewById(R.id.password);
-		
-		result = (TextView) findViewById(R.id.result);
 	
 		// login button pressed
 		Button button = (Button) findViewById(R.id.loginButton);
@@ -61,14 +59,14 @@ public class LoginActivity extends Base_Activity
 
 				// login with this information
 				login(usernameField, passwordField);
+				
 			}
 		});
 	}
 	
 	public void login(String username, String password)
 	{
-		Boolean loggedIn;
-		String loginSuccess = "";
+		LinearLayout il = (LinearLayout) findViewById(R.id.loginSucceed);
 		
 		try{
             
@@ -79,10 +77,14 @@ public class LoginActivity extends Base_Activity
 			HttpGet request = new HttpGet();
 			request.setURI(new URI(link));
 
+			Log.e("Tag","Gets Here!");
 			HttpResponse response = client.execute(request);
+			Log.e("Tag","Gets Here!!!");
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					response.getEntity().getContent()));
+			
+			Log.e("Tag","Gets Here!!!!!!");
 
 			StringBuffer sb = new StringBuffer("");
 			String line = "";
@@ -96,36 +98,52 @@ public class LoginActivity extends Base_Activity
 			
 			//close the buffer
 			in.close();
-			
 			//get array of results that come back
 			JSONArray jsonRoot = new JSONArray(sb.toString());
 			//get the first object of the array
 			JSONObject rootOBJ = jsonRoot.getJSONObject(0);
-			//get the string of the username
+			
+			//add username to the variable
 			String user = rootOBJ.getString("Username");
-			
-			loggedIn = true;
-			
-			if(loggedIn == true)
+
+			String loginSuccess = "Logged in Successfully";
+	
+			if(sb.toString().length() > 0)
 			{
-				loginSuccess = "Logged in Successfully";
-				result.setText(loginSuccess);
-				
-				//start the attendee acitivity intent and send in the username
+				loginTrue = true;
+			}
+			
+			if(loginTrue = true)
+			{
+				TextView btn1 = new TextView(this);
+				btn1.setLayoutParams((new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT)));
+				btn1.setText(loginSuccess);
+				il.addView(btn1);
+				loginTrue = false;
 			}
 
+			// start the attendee acitivity intent and send in the username
+			// pass the username to the match information page
+			Intent i = new Intent(getApplicationContext(), EnterMatchInfo.class);
+			i.putExtra("Username", user);
+			startActivity(i);
+			Log.e("Tag","Errorrrrrr");
+			
 		}
 		catch (Exception e) 
 		{
-			Log.d("Exception: " + e.getMessage(), "String");
-			loggedIn = false;
-
-			if (loggedIn == false) 
+			Log.e("Tag", e.getMessage());
+			String loginFail = "Unsuccessful Login";
+			// set up the dynamic button
+			
+			if(loginTrue == false)
 			{
-				loginSuccess = "Unsuccessful Login";
-				result.setText(loginSuccess);
+				TextView btn = new TextView(this);
+				btn.setLayoutParams((new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT)));
+				btn.setText(loginFail);
+				il.addView(btn);
 			}
-
+			
 		}
 	}
 	

@@ -45,5 +45,12 @@
     <string name="vs">vs.</string>
     <string name="home">Home</string>
     <string name="away">Away</string>
+    <string name="username">Username</string>
+    <string name="swipe">Swipe to Update</string>
+    <string name="posession">Posession</string>
+    <string name="points">Points</string>
+    <string name="goals">Goals</string>
+    <string name="yellow">Yellow Cards</string>
+    <string name="red">Red Cards</string>
 
 </resources>

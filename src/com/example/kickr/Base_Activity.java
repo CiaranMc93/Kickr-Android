@@ -52,7 +52,7 @@ public class Base_Activity extends Activity {
 			startActivity(new Intent(Base_Activity.this, Fixtures.class));
 			return true;
 		case R.id.fav:
-			startActivity(new Intent(Base_Activity.this, Favourites.class));
+			startActivity(new Intent(Base_Activity.this, UpdateMatchStats.class));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
