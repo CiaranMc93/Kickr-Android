@@ -12,7 +12,7 @@
         android:text="@string/username"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_marginBottom="20dp"
-        android:background="#333399"
+        android:background="#B2C5D1"
         android:minHeight="80dp" 
         android:gravity="center|top"
         android:textColor="#FFFFFF"/>

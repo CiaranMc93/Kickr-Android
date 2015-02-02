@@ -70,21 +70,18 @@ public class LoginActivity extends Base_Activity
 		
 		try{
             
-			String link = "http://ciaranmcmanus.hostei.com/login.php?username="+ username + "&password=" + password;
+			String link = "http://ciaranmcmanus.server2.eu/login.php?username="+ username + "&password=" + password;
 			
 			URL url = new URL(link);
 			HttpClient client = new DefaultHttpClient();
 			HttpGet request = new HttpGet();
 			request.setURI(new URI(link));
 
-			Log.e("Tag","Gets Here!");
 			HttpResponse response = client.execute(request);
-			Log.e("Tag","Gets Here!!!");
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					response.getEntity().getContent()));
-			
-			Log.e("Tag","Gets Here!!!!!!");
+		
 
 			StringBuffer sb = new StringBuffer("");
 			String line = "";
@@ -104,35 +101,19 @@ public class LoginActivity extends Base_Activity
 			JSONObject rootOBJ = jsonRoot.getJSONObject(0);
 			
 			//add username to the variable
-			String user = rootOBJ.getString("Username");
+			String user = rootOBJ.getString("username");
 
 			String loginSuccess = "Logged in Successfully";
 	
-			if(sb.toString().length() > 0)
-			{
-				loginTrue = true;
-			}
-			
-			if(loginTrue = true)
-			{
-				TextView btn1 = new TextView(this);
-				btn1.setLayoutParams((new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT)));
-				btn1.setText(loginSuccess);
-				il.addView(btn1);
-				loginTrue = false;
-			}
 
 			// start the attendee acitivity intent and send in the username
 			// pass the username to the match information page
 			Intent i = new Intent(getApplicationContext(), EnterMatchInfo.class);
-			i.putExtra("Username", user);
-			startActivity(i);
-			Log.e("Tag","Errorrrrrr");
+			i.putExtra("username", user);
 			
 		}
 		catch (Exception e) 
 		{
-			Log.e("Tag", e.getMessage());
 			String loginFail = "Unsuccessful Login";
 			// set up the dynamic button
 			

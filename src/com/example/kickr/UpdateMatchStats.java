@@ -136,13 +136,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			timerValue.setText("" + mins + ":"
 					+ String.format("%02d", secs) + ":"
 					+ String.format("%03d", milliseconds));
-			
-			if(secs == 15)
-			{
-				Toast.makeText(UpdateMatchStats.this,"15 Secs",Toast.LENGTH_SHORT).show();
-				
-			}
-			
+
 			customHandler.postDelayed(this, 0);	
 		}
 
@@ -207,10 +201,19 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	public void onShowPress(MotionEvent event) {
 		//Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
 	}
+	
+	int handPasses = 0;
 
 	@Override
-	public boolean onSingleTapUp(MotionEvent event) {
-		//Log.d(DEBUG_TAG, "onSingleTapUp: " + event.toString());
+	public boolean onSingleTapUp(MotionEvent event) 
+	{
+		
+		handPasses++;
+		if(handPasses == 20)
+		{
+			Toast.makeText(UpdateMatchStats.this,"Hand Passes: " + handPasses,Toast.LENGTH_SHORT).show();
+			
+		}
 		return true;
 	}
 

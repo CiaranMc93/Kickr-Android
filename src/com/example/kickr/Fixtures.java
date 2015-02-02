@@ -66,7 +66,7 @@ public class Fixtures extends Base_Activity
 		try
 		{
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost("http://ciaranmcmanus.hostei.com/getFixtures.php");
+			HttpPost httppost = new HttpPost("http://ciaranmcmanus.server2.eu/getAllFixtures.php");
 			HttpResponse response = httpclient.execute(httppost);
 			HttpEntity entity = response.getEntity();
 			input = entity.getContent();
@@ -77,7 +77,8 @@ public class Fixtures extends Base_Activity
 			Log.e("log tag","Error in Http connection" + e.toString());
 		}
 		//convert response to string
-		try{
+		try
+		{
 			BufferedReader reader = new BufferedReader(new InputStreamReader(input,"iso-8859-1"),8);
 			StringBuilder sb = new StringBuilder();
 			String line = null;
@@ -105,8 +106,8 @@ public class Fixtures extends Base_Activity
 				
 				//get the specific object in the JSON
 				JSONObject json = jArray.getJSONObject(i);
-				home = json.getString("Home");
-				away = json.getString("Away");
+				home = json.getString("teamA");
+				away = json.getString("teamB");
 				
 				// set up the dynamic buttons
 				Button btn = new Button(this);
@@ -115,13 +116,12 @@ public class Fixtures extends Base_Activity
 				btn.setText(home + " vs. " + away);
 				btn.setBackgroundColor(Color.TRANSPARENT);
 				il.addView(btn);
-				il.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
 				
 				//add a divider to show the buttons
 				TextView divider = new TextView(this);
 				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 				divider.setLayoutParams(lp);
-				divider.setBackgroundColor(Color.parseColor("#333399"));
+				divider.setBackgroundColor(Color.parseColor("#B2C5D1"));
 				il.addView(divider);
 				
 
@@ -134,12 +134,12 @@ public class Fixtures extends Base_Activity
 						{
 							//get all the information needed to be sent to the next acitivity
 							JSONObject json = jArray.getJSONObject(v.getId());
-							String home = (String)json.get("Home");
-							String referee = (String)json.get("Referee");
-							String dateTime = (String)json.get("Date");
-							String venue = (String)json.get("Venue");
-							String away = (String)json.get("Away");
-							String comp = (String)json.get("Competition");
+							String home = (String)json.get("teamA");
+							String referee = (String)json.get("referee");
+							String dateTime = (String)json.get("date");
+							String venue = (String)json.get("venue");
+							String away = (String)json.get("teamB");
+							String comp = (String)json.get("competition");
 							
 							//pass the match id to the fixture information
 							Intent i = new Intent(getApplicationContext(), FixtureInfoActivity.class);
