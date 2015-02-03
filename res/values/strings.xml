@@ -52,5 +52,7 @@
     <string name="goals">Goals</string>
     <string name="yellow">Yellow Cards</string>
     <string name="red">Red Cards</string>
+    <string name="contribute">Contribute</string>
+    <string name="common">Update Match</string>
 
 </resources>

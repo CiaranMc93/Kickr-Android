@@ -18,10 +18,14 @@ public class FixtureInfoActivity extends Base_Activity
 	String dateTime;
 	String ref;
 	String comp;
+	String fixID;
 	
 	//buttons for home and away
 	Button home;
 	Button away;
+	
+	//enter match information button
+	Button contribute;
 	
 	//create JSONarray 
 	JSONArray jArray = new JSONArray();
@@ -49,11 +53,15 @@ public class FixtureInfoActivity extends Base_Activity
 		home = (Button) findViewById(R.id.homeBtn);
 		away = (Button) findViewById(R.id.awayBtn);
 		
+		//create contribute button
+		contribute = (Button) findViewById(R.id.contribute);
+		
 		//a bundle with all the variables from the previous intent
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) 
 		{
 			//get the values from the previous activity
+			fixID = extras.getString("FixtureID");
 		    homeTeam = extras.getString("Home");
 		    awayTeam = extras.getString("Away");
 		    loc = extras.getString("Venue");
@@ -76,7 +84,9 @@ public class FixtureInfoActivity extends Base_Activity
 			public void onClick(View v) {
 				// Perform action on click
 
-				startActivity(new Intent(FixtureInfoActivity.this,TeamOverall.class));
+				Intent i = new Intent(getApplicationContext(), TeamOverall.class);
+				i.putExtra("Home", homeTeam);
+				startActivity(i);
 				
 			}
 		});
@@ -86,7 +96,21 @@ public class FixtureInfoActivity extends Base_Activity
 			public void onClick(View v) {
 				// Perform action on click
 
-				startActivity(new Intent(FixtureInfoActivity.this,TeamOverall.class));
+				Intent i = new Intent(getApplicationContext(), TeamOverall.class);
+				i.putExtra("Away", awayTeam);
+				startActivity(i);
+				
+			}
+		});
+		
+		contribute.setOnClickListener(new View.OnClickListener() 
+		{
+			public void onClick(View v) {
+				// Perform action on click
+
+				Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+				i.putExtra("FixtureID", fixID);
+				startActivity(i);
 				
 			}
 		});

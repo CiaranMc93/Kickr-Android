@@ -134,6 +134,7 @@ public class Fixtures extends Base_Activity
 						{
 							//get all the information needed to be sent to the next acitivity
 							JSONObject json = jArray.getJSONObject(v.getId());
+							String fixture = (String)json.get("fix_id");
 							String home = (String)json.get("teamA");
 							String referee = (String)json.get("referee");
 							String dateTime = (String)json.get("date");
@@ -143,6 +144,7 @@ public class Fixtures extends Base_Activity
 							
 							//pass the match id to the fixture information
 							Intent i = new Intent(getApplicationContext(), FixtureInfoActivity.class);
+							i.putExtra("FixtureID", fixture);
 							i.putExtra("Home",home);
 							i.putExtra("Away",away);
 							i.putExtra("Referee",referee);

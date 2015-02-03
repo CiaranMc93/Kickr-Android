@@ -23,6 +23,9 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	int countRightSwipes;
 	int countLeftSwipes;
 	
+	//fixture string
+	String fixture_id;
+	
 	//Set strings to be the home team and the away team
 	String team1 = "O'Dempseys";
 	String team2 = "Mountmellick";
@@ -57,6 +60,16 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		
 		timerValue = (TextView) findViewById(R.id.timerValue);
 		swipeUpdate = (Button) findViewById(R.id.updateUser);
+		
+		//a bundle with all the variables from the previous intent
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) 
+		{
+			fixture_id = extras.getString("FixtureID");
+		}
+		
+		TextView fixture = (TextView) findViewById(R.id.fixtureId);
+		fixture.setText(fixture_id);
 		
 		//change the image
 		setUpMessageButton();

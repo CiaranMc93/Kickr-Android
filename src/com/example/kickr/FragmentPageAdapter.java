@@ -9,7 +9,7 @@ import android.view.MenuItem;
 public class FragmentPageAdapter extends FragmentPagerAdapter {
 
 	//dynamic team name name
-	String team_name = "O'Dempseys";
+	String teamName;
 	
 	public FragmentPageAdapter(FragmentManager fm) {
 		super(fm);

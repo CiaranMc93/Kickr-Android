@@ -32,8 +32,7 @@ public class EnterMatchInfo extends Base_Activity {
 		if (extras != null) 
 		{
 			//get the values from the previous activity
-		    username = extras.getString("username");
-		    
+		    username = extras.getString("Username");
 		    
 		    //set the string
 		    user.setText(username);

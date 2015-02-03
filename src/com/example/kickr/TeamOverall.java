@@ -33,8 +33,8 @@ public class TeamOverall extends FragmentActivity implements ActionBar.TabListen
 		
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionbar.addTab(actionbar.newTab().setText("Team Form").setTabListener(this));
+		actionbar.addTab(actionbar.newTab().setText("Team Statistics").setTabListener(this));
 		actionbar.addTab(actionbar.newTab().setText("Line-Up").setTabListener(this));
-		actionbar.addTab(actionbar.newTab().setText("Statistics").setTabListener(this));
 		
 		viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() 
 		{
@@ -97,9 +97,6 @@ public class TeamOverall extends FragmentActivity implements ActionBar.TabListen
 		{
 		case R.id.timer_icon:
 			startActivity(new Intent(TeamOverall.this, LiveMatches.class));
-			return true;
-		case R.id.login:
-			startActivity(new Intent(TeamOverall.this, LoginActivity.class));
 			return true;
 		case R.id.fixtures:
 			startActivity(new Intent(TeamOverall.this, Fixtures.class));

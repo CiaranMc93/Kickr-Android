@@ -32,6 +32,8 @@ public class LoginActivity extends Base_Activity
 	EditText password;
 	
 	Boolean loginTrue = false;
+	
+	String fixture_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -47,6 +49,17 @@ public class LoginActivity extends Base_Activity
 	
 		// login button pressed
 		Button button = (Button) findViewById(R.id.loginButton);
+		
+		//get the fixture id from the previous activity
+		//a bundle with all the variables from the previous intent
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) 
+		{
+			fixture_id = extras.getString("FixtureID");
+		}
+		
+		
+		Button common = (Button) findViewById(R.id.common);
 		button.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				// Perform action on click
@@ -62,6 +75,18 @@ public class LoginActivity extends Base_Activity
 				
 			}
 		});
+		
+		common.setOnClickListener(new View.OnClickListener() 
+		{
+			public void onClick(View v) 
+			{
+				Intent i = new Intent(getApplicationContext(), CommonContribute.class);
+				i.putExtra("FixtureID", fixture_id);
+				startActivity(i);
+			}
+		});
+		
+		
 	}
 	
 	public void login(String username, String password)
@@ -100,29 +125,32 @@ public class LoginActivity extends Base_Activity
 			//get the first object of the array
 			JSONObject rootOBJ = jsonRoot.getJSONObject(0);
 			
-			//add username to the variable
-			String user = rootOBJ.getString("username");
-
-			String loginSuccess = "Logged in Successfully";
-	
-
 			// start the attendee acitivity intent and send in the username
 			// pass the username to the match information page
-			Intent i = new Intent(getApplicationContext(), EnterMatchInfo.class);
-			i.putExtra("username", user);
+			Intent i = new Intent(getApplicationContext(), UpdateMatchStats.class);
+			i.putExtra("FixtureID", fixture_id);
+			startActivity(i);
 			
 		}
 		catch (Exception e) 
 		{
-			String loginFail = "Unsuccessful Login";
+			String loginFail = "Unsuccessful Login, Register?";
 			// set up the dynamic button
 			
 			if(loginTrue == false)
 			{
 				TextView btn = new TextView(this);
-				btn.setLayoutParams((new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT)));
+				btn.setLayoutParams((new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT)));
 				btn.setText(loginFail);
 				il.addView(btn);
+				
+				btn.setOnClickListener(new View.OnClickListener() 
+				{
+					public void onClick(View v) 
+					{
+						
+					}
+				});
 			}
 			
 		}

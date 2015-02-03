@@ -31,7 +31,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/home" 
-                    android:background="#333399"
+                    android:background="#B2C5D1"
                     android:textColor="#FFFFFF"/>
 
                 <TextView
@@ -46,7 +46,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/away" 
-                    android:background="#333399"
+                    android:background="#B2C5D1"
                     android:textColor="#FFFFFF"/>
 
             </LinearLayout>
@@ -117,5 +117,20 @@
         </TableRow>
          
     </TableLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <Button
+            android:id="@+id/contribute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/contribute" />
+
+    </RelativeLayout>
 
 </LinearLayout>

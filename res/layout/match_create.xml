@@ -9,94 +9,12 @@
         android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/username"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_marginBottom="20dp"
         android:background="#B2C5D1"
-        android:minHeight="80dp" 
         android:gravity="center|top"
-        android:textColor="#FFFFFF"/>
-
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center" >
-
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:gravity="center">
-
-            <Button
-                android:id="@+id/createTeam"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/createTeam"
-                android:gravity="center" 
-                android:layout_marginBottom="8dp"/>
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center" >
-
-            <Button
-                android:id="@+id/ref"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/referee"
-                android:layout_marginBottom="8dp" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:gravity="center">
-
-            <Button
-                android:id="@+id/venue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/venue" 
-                android:layout_marginBottom="8dp"/>
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:gravity="center">
-
-            <Button
-                android:id="@+id/competition"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/comp"
-				android:layout_marginBottom="8dp"/>
-
-        </TableRow>
-        
-        <TableRow
-            android:id="@+id/tableRow5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center" >
-
-            <Button
-                android:id="@+id/createMatch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/createMatch" 
-                android:layout_marginBottom="8dp"/>
-
-        </TableRow>
-    </TableLayout>
+        android:minHeight="80dp"
+        android:text="@string/username"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#FFFFFF" />
 
 </LinearLayout>

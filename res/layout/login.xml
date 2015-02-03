@@ -7,6 +7,7 @@
 
     <EditText
         android:id="@+id/username"
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10" 
@@ -27,5 +28,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/login" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <Button
+            android:id="@+id/common"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/common" />
+
+    </RelativeLayout>
 
 </LinearLayout>

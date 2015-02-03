@@ -45,9 +45,6 @@ public class Base_Activity extends Activity {
 		case R.id.timer_icon:
 			startActivity(new Intent(Base_Activity.this, LiveMatches.class));
 			return true;
-		case R.id.login:
-			startActivity(new Intent(Base_Activity.this, LoginActivity.class));
-			return true;
 		case R.id.fixtures:
 			startActivity(new Intent(Base_Activity.this, Fixtures.class));
 			return true;
