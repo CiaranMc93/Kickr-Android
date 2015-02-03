@@ -23,6 +23,10 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	int countRightSwipes;
 	int countLeftSwipes;
 	
+	//make boolean for home and away team stats
+	Boolean homeTeamStats;
+	Boolean awayTeamStats;
+	
 	//fixture string
 	String fixture_id;
 	
@@ -38,18 +42,23 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	
 	//counter logic
 	private Button pauseButton;
-
 	//display the time
 	private TextView timerValue;
 	private long startTime = 0L;
-
 	//handle the time
 	private Handler customHandler = new Handler();
-
 	//time logic
 	long timeInMilliseconds = 0L;
 	long timeSwapBuff = 0L;
 	long updatedTime = 0L;
+	
+	private long startTimePos = 0L;
+	//handle the time
+	private Handler posessionHandler = new Handler();
+	//time logic
+	long timeInMillisecondsPos = 0L;
+	long timeSwapBuffPos = 0L;
+	long updatedTimePos = 0L;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -100,7 +109,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				startTime = SystemClock.uptimeMillis();
 				playButton.setVisibility(View.INVISIBLE);
 				customHandler.postDelayed(updateTimerThread, 0);
-
+				startTimePos = SystemClock.uptimeMillis();
+				posessionHandler.postDelayed(updateMatchPosession, 0);
 			}
 		});
 		
@@ -148,9 +158,35 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			//update the display string
 			timerValue.setText("" + mins + ":"
 					+ String.format("%02d", secs) + ":"
-					+ String.format("%03d", milliseconds));
+					+ String.format("%02d", milliseconds));
 
 			customHandler.postDelayed(this, 0);	
+		}
+
+	};
+	
+	private Runnable updateMatchPosession = new Runnable() 
+	{
+		public void run() 
+		{
+
+			//milliseconds calculation
+			timeInMillisecondsPos = SystemClock.uptimeMillis() - startTimePos;
+
+			updatedTimePos = timeSwapBuffPos + timeInMillisecondsPos;
+
+			int secs = (int) (updatedTimePos / 1000);
+			int mins = secs / 60;
+			secs = secs % 60;
+			int milliseconds = (int) (updatedTimePos % 1000);
+			//update the display string
+			
+			if(mins == 1)
+			{
+				Toast.makeText(UpdateMatchStats.this, "Yay",Toast.LENGTH_SHORT).show();
+			}
+
+			posessionHandler.postDelayed(this, 0);	
 		}
 
 	};
@@ -180,28 +216,43 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			if(countRightSwipes == 1)
 			{
 				swipeUpdate.setText(team1 + " in possession");
+				awayTeamStats = false;
+				homeTeamStats = true;
 			}
 			else if(countRightSwipes == 2)
 			{
 				swipeUpdate.setText(team1 + " is attacking");
 			}
+			
+			if(countRightSwipes == 3)
+			{
+				Toast.makeText(UpdateMatchStats.this, "Yay",Toast.LENGTH_SHORT).show();
+			}
 		}
 		else if(velocityX < 0 && velocityY < 0)
 		{
+			//swipe is when user moves finger across touch pad right or left
+			//reset the swipes for home team
 			countRightSwipes = 0;
-			
+			//count swipes for left team
 			countLeftSwipes++;
 			
 			if(countLeftSwipes == 1)
 			{
 				swipeUpdate.setText(team2 + " in possession");
+				awayTeamStats = true;
+				homeTeamStats = false;
 			}
 			else if(countLeftSwipes ==2)
 			{
 				swipeUpdate.setText(team2 + " is attacking");
 			}
+			
+			if(countLeftSwipes == 3)
+			{
+				Toast.makeText(UpdateMatchStats.this, "Yay",Toast.LENGTH_SHORT).show();
+			}
 		}
-		//Log.d(DEBUG_TAG, "onFling: " + event1.toString() + event2.toString());
 		return true;
 	}
 
@@ -212,27 +263,62 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 
 	@Override
 	public void onShowPress(MotionEvent event) {
-		//Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
 	}
 	
-	int handPasses = 0;
+	int homehandPasses = 0;
+	int awayhandPasses = 0;
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent event) 
 	{
-		
-		handPasses++;
-		if(handPasses == 20)
+		if(homeTeamStats)
 		{
-			Toast.makeText(UpdateMatchStats.this,"Hand Passes: " + handPasses,Toast.LENGTH_SHORT).show();
+			homehandPasses++;
+			if(homehandPasses == 5)
+			{
+				Toast.makeText(UpdateMatchStats.this,"Hand Passes: " + homehandPasses,Toast.LENGTH_SHORT).show();
 			
+			}
+			
+			if(homehandPasses == 15)
+			{
+				startTime = 0L;
+				startTime = SystemClock.uptimeMillis();
+                customHandler.removeCallbacks(updateTimerThread);
+                customHandler.postDelayed(updateTimerThread, 0);
+				Log.e("Passes","Number: " + homehandPasses);
+			}
+		}
+		
+		
+		if(awayTeamStats)
+		{
+			awayhandPasses++;
+			if(awayhandPasses == 5)
+			{
+				Toast.makeText(UpdateMatchStats.this,"Hand Passes: " + awayhandPasses,Toast.LENGTH_SHORT).show();
+				awayhandPasses = 0;
+			
+			}
 		}
 		return true;
 	}
 
 	@Override
 	public boolean onDoubleTap(MotionEvent event) {
-		Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
+		Boolean selectSub = false;
+		Boolean selectCard = false;
+		
+		selectSub = true;
+		
+		if(selectSub)
+		{
+			Toast.makeText(UpdateMatchStats.this,"Sub on/off",Toast.LENGTH_SHORT).show();
+		}
+		else if(selectCard)
+		{
+			Toast.makeText(UpdateMatchStats.this,"Card yellow/black/red",Toast.LENGTH_SHORT).show();
+		}
 		return true;
 	}
 

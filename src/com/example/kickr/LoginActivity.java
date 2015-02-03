@@ -64,8 +64,6 @@ public class LoginActivity extends Base_Activity
 			public void onClick(View v) {
 				// Perform action on click
 
-				//startActivity(new Intent(LoginActivity.this,AttendeeActivity.class));
-
 				// get the text from the edit texts
 				String usernameField = username.getText().toString();
 				String passwordField = password.getText().toString();

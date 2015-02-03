@@ -18,6 +18,8 @@ public class TeamOverall extends FragmentActivity implements ActionBar.TabListen
 	ViewPager viewpager;
 	FragmentPageAdapter ft;
 	
+	String fixture_id;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
