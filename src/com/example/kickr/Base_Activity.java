@@ -55,5 +55,12 @@ public class Base_Activity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+
+
+
+	public void onRefresh() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

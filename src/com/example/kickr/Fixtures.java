@@ -20,7 +20,9 @@ import android.app.ActionBar.LayoutParams;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +35,9 @@ import android.view.View.OnClickListener;
 
 public class Fixtures extends Base_Activity 
 {
+	// id for the layout
+	LinearLayout il;
+
 	JSONArray jArray;
 	// get the first object of the array
 	JSONObject fixtureObject;
@@ -47,6 +52,29 @@ public class Fixtures extends Base_Activity
 		setContentView(R.layout.fixtures);
 		StrictMode.enableDefaults();
 		
+		il = (LinearLayout) findViewById(R.id.layoutButtons);
+		
+		final SwipeRefreshLayout swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+		swipe.setColorSchemeColors(Color.RED, Color.CYAN, Color.GREEN, Color.MAGENTA);
+		swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+			
+			@Override
+			public void onRefresh() {
+				
+				swipe.setRefreshing(true);
+				(new Handler()).postDelayed(new Runnable() {
+					
+					@Override
+					public void run() {
+						
+						swipe.setRefreshing(false);	
+						//get the data again
+						il.removeAllViews();
+						getData();
+					}
+				},3000);
+			}
+		});
 		
 		getData();
 	}
@@ -55,10 +83,6 @@ public class Fixtures extends Base_Activity
 	public void getData()
 	{
 		String fixtureResult = "";
-		
-		// id for the layout
-		LinearLayout il = (LinearLayout) findViewById(R.id.layoutButtons);
-
 		
 		InputStream input = null;
 		
