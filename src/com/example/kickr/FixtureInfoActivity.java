@@ -110,6 +110,11 @@ public class FixtureInfoActivity extends Base_Activity
 
 				Intent i = new Intent(getApplicationContext(), LoginActivity.class);
 				i.putExtra("FixtureID", fixID);
+				i.putExtra("Home", homeTeam);
+				i.putExtra("Away", awayTeam);
+				i.putExtra("Venue", loc);
+				i.putExtra("Competition", comp);
+				i.putExtra("Referee", ref);
 				startActivity(i);
 				
 			}

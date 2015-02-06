@@ -1,10 +1,24 @@
 package com.example.kickr;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.OnDoubleTapListener;
@@ -19,6 +33,10 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	private static final String DEBUG_TAG = "Gestures";
 	private GestureDetectorCompat mDetector;
 	
+	JSONObject createMatch = new JSONObject();
+	
+	TextView awayTeamText;
+	
 	//count swipe functionality
 	int countRightSwipes;
 	int countLeftSwipes;
@@ -29,6 +47,11 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	
 	//fixture string
 	String fixture_id;
+	String homeTeam;
+	String awayTeam;
+	String venue;
+	String competition;
+	String referee;
 	
 	//Set strings to be the home team and the away team
 	String team1 = "O'Dempseys";
@@ -52,6 +75,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	long timeSwapBuff = 0L;
 	long updatedTime = 0L;
 	
+	//timer for posession
 	private long startTimePos = 0L;
 	//handle the time
 	private Handler posessionHandler = new Handler();
@@ -59,6 +83,24 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	long timeInMillisecondsPos = 0L;
 	long timeSwapBuffPos = 0L;
 	long updatedTimePos = 0L;
+	
+	//create timer for notifications
+	private long startTimeNotification = 0L;
+	//handle the time
+	private Handler noteHandler = new Handler();
+	//time logic
+	long timeInMillisecondsNote = 0L;
+	long timeSwapBuffNote = 0L;
+	long updatedTimeNote = 0L;
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	     if (keyCode == KeyEvent.KEYCODE_BACK) {
+	     //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+	     return true;
+	     }
+	     return super.onKeyDown(keyCode, event);    
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -66,22 +108,63 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.update_match_stats);
 		
+		//default home team to have posession
+		homeTeamStats = true;
 		
 		timerValue = (TextView) findViewById(R.id.timerValue);
 		swipeUpdate = (Button) findViewById(R.id.updateUser);
 		
-		//a bundle with all the variables from the previous intent
+		awayTeamText = (TextView) findViewById(R.id.team2);
+		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) 
 		{
+			//get the values from the previous activity
 			fixture_id = extras.getString("FixtureID");
+		    homeTeam = extras.getString("Home");
+		    awayTeam = extras.getString("Away");
+		    venue = extras.getString("Venue");
+		    referee = extras.getString("Referee");
+		    competition = extras.getString("Competition");
+		   
+		    setText(homeTeam,awayTeam);
 		}
 		
-		TextView fixture = (TextView) findViewById(R.id.fixtureId);
-		fixture.setText(fixture_id);
+		getData(fixture_id,homeTeam,awayTeam,venue,competition,referee);
 		
-		//change the image
-		setUpMessageButton();
+		// change the image
+		// button functionality
+		final Button playButton = (Button) findViewById(R.id.startMatch);
+		playButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startTime = SystemClock.uptimeMillis();
+				playButton.setVisibility(View.INVISIBLE);
+				customHandler.postDelayed(updateTimerThread, 0);
+				
+				
+				//posession timer
+				startTimePos = SystemClock.uptimeMillis();
+				posessionHandler.postDelayed(updateMatchPosession, 0);
+				
+				
+				//notification timer
+				startTimeNotification = SystemClock.uptimeMillis();
+				noteHandler.postDelayed(updateMatchNotifications, 0);
+			}
+		});
+
+		pauseButton = (Button) findViewById(R.id.pauseButton);
+
+		pauseButton.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View view) {
+
+				timeSwapBuff += timeInMilliseconds;
+				customHandler.removeCallbacks(updateTimerThread);
+
+			}
+		});
 		
 		//set the text of the teams
 		setText(team1,team2);
@@ -96,38 +179,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		
 	}
 	
-	//functionality to control activities based on gesture count
-	private void setUpMessageButton()
-	{
-		
-		//button functionality 
-		final Button playButton = (Button) findViewById(R.id.startMatch);
-		playButton.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View v)
-			{			
-				startTime = SystemClock.uptimeMillis();
-				playButton.setVisibility(View.INVISIBLE);
-				customHandler.postDelayed(updateTimerThread, 0);
-				startTimePos = SystemClock.uptimeMillis();
-				posessionHandler.postDelayed(updateMatchPosession, 0);
-			}
-		});
-		
-		pauseButton = (Button) findViewById(R.id.pauseButton);
-
-		pauseButton.setOnClickListener(new View.OnClickListener() {
-
-			public void onClick(View view) 
-			{
-
-				timeSwapBuff += timeInMilliseconds;
-				customHandler.removeCallbacks(updateTimerThread);
-
-			}
-		});
-	}
-	
 	//change the text for each team home and away
 	public void setText(String team1, String team2)
 	{
@@ -136,7 +187,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	    homeTeam.setText(team1);
 	    
 	    TextView awayTeam = (TextView) findViewById(R.id.team2);
-	    awayTeam.setText(team2);
+	    //awayTeam.setText(team2);
 	    
 	}
 	
@@ -154,11 +205,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			int secs = (int) (updatedTime / 1000);
 			int mins = secs / 60;
 			secs = secs % 60;
-			int milliseconds = (int) (updatedTime % 1000);
 			//update the display string
-			timerValue.setText("" + mins + ":"
-					+ String.format("%02d", secs) + ":"
-					+ String.format("%02d", milliseconds));
+			timerValue.setText("" + mins + ":"+ String.format("%02d", secs));
 
 			customHandler.postDelayed(this, 0);	
 		}
@@ -191,6 +239,31 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 
 	};
 	
+	private Runnable updateMatchNotifications = new Runnable() 
+	{
+		public void run() 
+		{
+
+			//milliseconds calculation
+			timeInMillisecondsNote = SystemClock.uptimeMillis() - startTimeNotification;
+
+			updatedTimeNote = timeSwapBuffNote + timeInMillisecondsNote;
+
+			int secs = (int) (updatedTimeNote / 1000);
+			int mins = secs / 60;
+			secs = secs % 60;
+			//update the display string
+			
+			if(mins == 2)
+			{
+				Toast.makeText(UpdateMatchStats.this, "Notification",Toast.LENGTH_SHORT).show();
+			}
+
+			noteHandler.postDelayed(this, 0);	
+		}
+
+	};
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		this.mDetector.onTouchEvent(event);
@@ -199,7 +272,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	}
 
 	@Override
-	public boolean onDown(MotionEvent event) {
+	public boolean onDown(MotionEvent event) 
+	{
 		//Log.d(DEBUG_TAG, "onDown: " + event.toString());
 		return true;
 	}
@@ -265,47 +339,37 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	public void onShowPress(MotionEvent event) {
 	}
 	
+	//initialize handpass variables
 	int homehandPasses = 0;
 	int awayhandPasses = 0;
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent event) 
-	{
-		if(homeTeamStats)
+	{	
+		//make sure handpasses cant be counted until a team is in posession
+		if(countRightSwipes == 0 && countLeftSwipes == 0)
 		{
-			homehandPasses++;
-			if(homehandPasses == 5)
-			{
-				Toast.makeText(UpdateMatchStats.this,"Hand Passes: " + homehandPasses,Toast.LENGTH_SHORT).show();
 			
-			}
-			
-			if(homehandPasses == 15)
-			{
-				startTime = 0L;
-				startTime = SystemClock.uptimeMillis();
-                customHandler.removeCallbacks(updateTimerThread);
-                customHandler.postDelayed(updateTimerThread, 0);
-				Log.e("Passes","Number: " + homehandPasses);
-			}
 		}
-		
-		
-		if(awayTeamStats)
+		else
 		{
-			awayhandPasses++;
-			if(awayhandPasses == 5)
+			//count the handpasses for each team
+			if(homeTeamStats == true)
 			{
-				Toast.makeText(UpdateMatchStats.this,"Hand Passes: " + awayhandPasses,Toast.LENGTH_SHORT).show();
-				awayhandPasses = 0;
+				homehandPasses++;
+			}
 			
+			if(awayTeamStats == true)
+			{
+				awayhandPasses++;
 			}
 		}
 		return true;
 	}
 
 	@Override
-	public boolean onDoubleTap(MotionEvent event) {
+	public boolean onDoubleTap(MotionEvent event) 
+	{
 		Boolean selectSub = false;
 		Boolean selectCard = false;
 		
@@ -341,4 +405,43 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		return false;
 	}
 	
+	//gets the fixture data from the database
+	public void getData(String fixture_id,String home, String away,String venue, String comp, String ref) 
+	{
+		InputStream input = null;
+		
+		try 
+		{
+			createMatch.put("FixtureID", fixture_id);
+			createMatch.put("Home",home);
+			createMatch.put("Away", away);
+			createMatch.put("Venue", venue);
+			createMatch.put("Competition", comp);
+			createMatch.put("Referee", ref);
+		} 
+		catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// try catch hhtp client request
+		try 
+		{
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpPost httppost = new HttpPost("http://ciaranmcmanus.server2.eu/insertInto.php?fix_id=" + createMatch);
+			HttpResponse response = httpclient.execute(httppost);
+			HttpEntity entity = response.getEntity();
+			input = entity.getContent();
+
+		} 
+		catch (Exception e) 
+		{
+			Log.e("log tag", "Error in Http connection" + e.toString());
+		}
+	}
+	
+	public void sendData()
+	{
+		
+	}
 }

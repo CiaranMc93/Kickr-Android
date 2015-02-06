@@ -18,10 +18,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +36,15 @@ public class LoginActivity extends Base_Activity
 	
 	Boolean loginTrue = false;
 	
+	//get the information of the fixture to be contributed to and send on
 	String fixture_id;
+	String homeTeam;
+	String awayTeam;
+	String referee;
+	String competition;
+	String venue;
+	
+	private boolean isSignedIn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -55,11 +66,17 @@ public class LoginActivity extends Base_Activity
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) 
 		{
+			//get the values from the previous activity
 			fixture_id = extras.getString("FixtureID");
+		    homeTeam = extras.getString("Home");
+		    awayTeam = extras.getString("Away");
+		    venue = extras.getString("Venue");
+		    referee = extras.getString("Referee");
+		    competition = extras.getString("Competition");
 		}
 		
 		
-		Button common = (Button) findViewById(R.id.common);
+		
 		button.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				// Perform action on click
@@ -74,6 +91,7 @@ public class LoginActivity extends Base_Activity
 			}
 		});
 		
+		Button common = (Button) findViewById(R.id.common);
 		common.setOnClickListener(new View.OnClickListener() 
 		{
 			public void onClick(View v) 
@@ -122,11 +140,18 @@ public class LoginActivity extends Base_Activity
 			JSONArray jsonRoot = new JSONArray(sb.toString());
 			//get the first object of the array
 			JSONObject rootOBJ = jsonRoot.getJSONObject(0);
+
+			isSignedIn = true;
 			
-			// start the attendee acitivity intent and send in the username
-			// pass the username to the match information page
+			
 			Intent i = new Intent(getApplicationContext(), UpdateMatchStats.class);
 			i.putExtra("FixtureID", fixture_id);
+			i.putExtra("isSignedIn", isSignedIn);
+			i.putExtra("Home", homeTeam);
+			i.putExtra("Away", awayTeam);
+			i.putExtra("Venue", venue);
+			i.putExtra("Competition", competition);
+			i.putExtra("Referee", referee);
 			startActivity(i);
 			
 		}
@@ -153,5 +178,4 @@ public class LoginActivity extends Base_Activity
 			
 		}
 	}
-	
 }

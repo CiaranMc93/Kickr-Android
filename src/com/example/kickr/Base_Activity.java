@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 
 public class Base_Activity extends Activity {
-
 	
 
 	// Called when the activity is first created.
@@ -23,8 +22,6 @@ public class Base_Activity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	}
-
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -55,8 +52,6 @@ public class Base_Activity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-
-
 
 	public void onRefresh() {
 		// TODO Auto-generated method stub

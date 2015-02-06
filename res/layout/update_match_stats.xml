@@ -63,22 +63,11 @@
             android:id="@+id/updateUser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/timerValue"
             android:layout_alignParentLeft="true"
-            android:layout_alignRight="@+id/timerValue"
-            android:layout_marginBottom="36dp"
+            android:layout_below="@+id/team1"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="31dp"
             android:text="@string/swipe" />
-
-        <TextView
-            android:id="@+id/fixtureId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/updateUser"
-            android:layout_alignBottom="@+id/updateUser"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="26dp"
-            android:text="Fixture Id"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </RelativeLayout>
 

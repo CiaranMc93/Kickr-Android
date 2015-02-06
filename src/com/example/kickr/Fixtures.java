@@ -52,7 +52,7 @@ public class Fixtures extends Base_Activity
 		setContentView(R.layout.fixtures);
 		StrictMode.enableDefaults();
 		
-		il = (LinearLayout) findViewById(R.id.layoutButtons);
+		il = (LinearLayout) findViewById(R.id.layoutButtons);	
 		
 		final SwipeRefreshLayout swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
 		swipe.setColorSchemeColors(Color.RED, Color.CYAN, Color.GREEN, Color.MAGENTA);
