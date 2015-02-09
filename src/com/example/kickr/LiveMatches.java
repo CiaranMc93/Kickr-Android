@@ -50,7 +50,7 @@ public class LiveMatches extends Base_Activity
 		try
 		{
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost("http://ciaranmcmanus.hostei.com/getAllCustomers.php");
+			HttpPost httppost = new HttpPost("http://ciaranmcmanus.server2.eu/getAllMatches.php");
 			HttpResponse response = httpclient.execute(httppost);
 			HttpEntity entity = response.getEntity();
 			input = entity.getContent();
@@ -82,13 +82,13 @@ public class LiveMatches extends Base_Activity
 		//parse the JSON data that returns information needed
 		try{
 			String s = "";
-			JSONArray jArray = new JSONArray(loginResult);
 			
+			JSONArray jArray = new JSONArray(loginResult);
 			//loop through the array
 			for(int i=0; i<jArray.length(); i++)
 			{
 				JSONObject json = jArray.getJSONObject(i);
-				s = s + "Name : " + json.getString("Username") + "\nPassword : " + json.getString("Password") + "\n";
+				s = s + "Match : " + json.getString("teamA") + " " + json.getString("teamAgoals") + "-" + json.getString("teamApoints") + " " + json.getString("teamBgoals") + "-" + json.getString("teamBpoints") + " " + json.getString("teamB");
 			}
 			
 			resultView.setText(s);

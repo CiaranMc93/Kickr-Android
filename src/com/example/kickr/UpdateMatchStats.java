@@ -3,12 +3,22 @@ package com.example.kickr;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +46,12 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	JSONObject createMatch = new JSONObject();
 	
 	TextView awayTeamText;
+	
+	
+	String fixtureResult;
+	
+	
+	
 	
 	//count swipe functionality
 	int countRightSwipes;
@@ -93,6 +109,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	long timeSwapBuffNote = 0L;
 	long updatedTimeNote = 0L;
 	
+	/*
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	     if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -101,6 +118,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	     }
 	     return super.onKeyDown(keyCode, event);    
 	}
+	*/
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -409,7 +427,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	public void getData(String fixture_id,String home, String away,String venue, String comp, String ref) 
 	{
 		InputStream input = null;
-		
+		JSONArray json = new JSONArray();
 		try 
 		{
 			createMatch.put("FixtureID", fixture_id);
@@ -418,26 +436,105 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			createMatch.put("Venue", venue);
 			createMatch.put("Competition", comp);
 			createMatch.put("Referee", ref);
+			
+			
+			json.put(0, createMatch);
 		} 
 		catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		// try catch hhtp client request
+		
+		HttpClient client = new DefaultHttpClient();
+		HttpResponse response;
 		try 
 		{
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost("http://ciaranmcmanus.server2.eu/insertInto.php?fix_id=" + createMatch);
-			HttpResponse response = httpclient.execute(httppost);
-			HttpEntity entity = response.getEntity();
-			input = entity.getContent();
+			HttpPost post = new HttpPost(
+					"http://ciaranmcmanus.server2.eu/insertInto.php");
+			List<NameValuePair> nVP = new ArrayList<NameValuePair>(2);
+			nVP.add(new BasicNameValuePair("json", json.toString())); // studentJson
+																		// is
+																		// the
+																		// JSON
+																		// input
+
+			// student.Json.toString() produces the correct JSON
+			// [{"studentId":"2","class":"2a","dbname":"testDb"}]
+
+			post.setEntity(new UrlEncodedFormEntity(nVP));
+			response = client.execute(post);
+			
+			if (response != null) 
+			{
+				
+				InputStream in = response.getEntity().getContent(); // Get the
+																	// data in
+																	// the
+																	// entity
+
+				BufferedReader reader = new BufferedReader(new InputStreamReader(in, "iso-8859-1"), 8);
+				StringBuilder sb = new StringBuilder();
+				String line = null;
+				while ((line = reader.readLine()) != null) 
+				{
+					sb.append(line + "\n");
+				}
+				in.close();
+
+
+				fixtureResult = sb.toString();
+
+				awayTeamText.setText(fixtureResult);
+			}
+
+		} catch (Exception e) {
+			Log.e("log tag", "Error in Http connection" + e.toString());
+		}
+ 
+
+		/*
+		// try catch hhtp client request
+		HttpClient client = new DefaultHttpClient();
+		HttpResponse response;
+		
+		try
+		{
+		 HttpPost post = new HttpPost("http://ciaranmcmanus.server2.eu/insertInto.php?name=");
+		 List<NameValuePair> nVP = new ArrayList<NameValuePair>(2);  
+		 nVP.add(new BasicNameValuePair("json", json.toString()));  //studentJson is the JSON input
+
+		//student.Json.toString() produces the correct JSON [{"studentId":"2","class":"2a","dbname":"testDb"}]
+
+		 post.setEntity(new UrlEncodedFormEntity(nVP));
+		 response = client.execute(post);
+		 
+			 if(response != null)
+			 {
+				 Log.e("Not Null","Yes");
+                InputStream in = response.getEntity().getContent(); //Get the data in the entity
+                 
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input,"iso-8859-1"),8);
+     			StringBuilder sb = new StringBuilder();
+     			String line = null;
+     			while((line = reader.readLine()) != null)
+     			{
+     				sb.append(line + "\n");
+     			}
+     			
+     			in.close();
+     			
+     			fixtureResult = sb.toString();
+     			
+     			awayTeamText.setText(fixtureResult);
+             }
 
 		} 
 		catch (Exception e) 
 		{
 			Log.e("log tag", "Error in Http connection" + e.toString());
 		}
+		
+		*/
 	}
 	
 	public void sendData()
