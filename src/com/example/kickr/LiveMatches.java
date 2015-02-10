@@ -10,16 +10,21 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ActionBar.LayoutParams;
 import android.content.Intent;
 import android.content.ClipData.Item;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +32,8 @@ public class LiveMatches extends Base_Activity
 {
 	//show the results 
 	TextView resultView;
+	
+	LinearLayout il;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +42,7 @@ public class LiveMatches extends Base_Activity
 		
 		StrictMode.enableDefaults();
 		
-		resultView = (TextView)findViewById(R.id.result);
+		il = (LinearLayout) findViewById(R.id.live_matches);
 		
 		getData();
 	}
@@ -80,7 +87,8 @@ public class LiveMatches extends Base_Activity
 		}
 		
 		//parse the JSON data that returns information needed
-		try{
+		try
+		{
 			String s = "";
 			
 			JSONArray jArray = new JSONArray(loginResult);
@@ -88,10 +96,39 @@ public class LiveMatches extends Base_Activity
 			for(int i=0; i<jArray.length(); i++)
 			{
 				JSONObject json = jArray.getJSONObject(i);
-				s = s + "Match : " + json.getString("teamA") + " " + json.getString("teamAgoals") + "-" + json.getString("teamApoints") + " " + json.getString("teamBgoals") + "-" + json.getString("teamBpoints") + " " + json.getString("teamB");
+				String mins = json.getString("match_mins");
+				String home = json.getString("teamA");
+				String pointsHome = json.getString("teamApoints");
+				String goalsHome = json.getString("teamAgoals");
+				String away = json.getString("teamB");
+				String pointsAway = json.getString("teamBpoints");
+				String goalsAway = json.getString("teamBgoals");
+				
+				// set up the dynamic buttons
+				Button btn = new Button(this);
+				btn.setLayoutParams((new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT)));
+				btn.setId(i);
+				btn.setText(mins + " " + home + " " + goalsHome + "-" + pointsHome + " " + goalsAway + "-" + pointsAway + " " + away);
+				btn.setBackgroundColor(Color.TRANSPARENT);
+				il.addView(btn);
+				
+				//add a divider to show the buttons
+				TextView divider = new TextView(this);
+				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+				divider.setLayoutParams(lp);
+				divider.setBackgroundColor(Color.parseColor("#B2C5D1"));
+				il.addView(divider);
+				
+
+				btn.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) 
+					{
+						//need to pass the match information to the match information screen
+						
+					}
+				});
 			}
-			
-			resultView.setText(s);
 			
 		}
 		catch(Exception e)

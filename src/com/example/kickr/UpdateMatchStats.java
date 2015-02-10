@@ -1,44 +1,40 @@
 package com.example.kickr;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,16 +42,27 @@ import android.widget.Toast;
 
 public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListener, OnGestureListener, SensorEventListener {
 
-	private static final String DEBUG_TAG = "Gestures";
 	private GestureDetectorCompat mDetector;
+	private static int TAKE_PICTURE = 1;
+	private Uri imageUri;
 	
 	Sensor accelerate;
 	SensorManager sm;
 	
+	//image view of the pitch
+	ImageView pitch1;
+	
+	//text views to hold the team names
+	TextView homeTeam1;
+	TextView awayTeam1;
+	
+	int counter;
+	
 	JSONObject createMatch = new JSONObject();
 	
-	TextView awayTeamText;
-	
+	//get rid of this eventually
+	TextView homePoints;
+	TextView awayPoints;
 	
 	String fixtureResult;
 	
@@ -66,6 +73,9 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	//make boolean for home and away team stats
 	Boolean homeTeamStats;
 	Boolean awayTeamStats;
+	//boolean values for if the home team and away team are attacking of not
+	Boolean homeAttack;
+	Boolean awayAttack;
 	
 	//fixture string
 	String fixture_id;
@@ -75,18 +85,12 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	String competition;
 	String referee;
 	
-	//Set strings to be the home team and the away team
-	String team1 = "O'Dempseys";
-	String team2 = "Mountmellick";
-	
 	//swipe count image
 	Button swipeUpdate;
 	
 	//count variable
 	int count = 0;
 	
-	//counter logic
-	private Button pauseButton;
 	//display the time
 	private TextView timerValue;
 	private long startTime = 0L;
@@ -115,6 +119,21 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	long timeSwapBuffNote = 0L;
 	long updatedTimeNote = 0L;
 	
+	//create variables in order to hold the information of each team in each match
+	//home team
+	int teamAPoints;
+	int teamAGoals;
+	int yellowACards;
+	int redACards;
+	int blackACards;
+	
+	//away team
+	int teamBPoints;
+	int teamBGoals;
+	int yellowBCards;
+	int redBCards;
+	int blackBCards;
+	
 	/*
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -132,26 +151,36 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.update_match_stats);
 		
+		//when stats are created initialise to 0
+		teamAPoints = 0;
+		teamBPoints = 0;
+		teamAGoals = 0;
+		teamBGoals = 0;
+		
+		homeAttack = false;
+		awayAttack = false;
+		
+		counter = 0;
+		
 		//default home team to have posession
 		homeTeamStats = true;
 		
-		timerValue = (TextView) findViewById(R.id.timerValue);
 		swipeUpdate = (Button) findViewById(R.id.updateUser);
 		
-		awayTeamText = (TextView) findViewById(R.id.team2);
+		//textviews used to set the home and away team names
+		homeTeam1 = (TextView) findViewById(R.id.team1);
+		awayTeam1 = (TextView) findViewById(R.id.team2);
 		
+		//get the id of the image view
+		pitch1 = (ImageView) findViewById(R.id.pitchUpdate);
+		
+		//textviews to set the teams points
+		homePoints = (TextView) findViewById(R.id.homePoints);
+		awayPoints = (TextView) findViewById(R.id.awayPoints);
 		
 		sm = (SensorManager) getSystemService(SENSOR_SERVICE);
 		accelerate = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		sm.registerListener(this, accelerate,SensorManager.SENSOR_DELAY_NORMAL);
-		
-		
-		
-		
-		
-		
-		
-		
+		sm.registerListener(this, accelerate,SensorManager.SENSOR_DELAY_NORMAL);		
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) 
@@ -163,18 +192,22 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		    venue = extras.getString("Venue");
 		    referee = extras.getString("Referee");
 		    competition = extras.getString("Competition");
-		   
-		    setText(homeTeam,awayTeam);
+		    
+		    //set the home team strings
+		    homeTeam1.setText(homeTeam);
+		    awayTeam1.setText(awayTeam);
+		    
 		}
 		
 		getData(fixture_id,homeTeam,awayTeam,venue,competition,referee);
 		
 		// change the image
 		// button functionality
-		final Button playButton = (Button) findViewById(R.id.startMatch);
+		final Button playButton = (Button) findViewById(R.id.playMatch);
 		playButton.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v) 
+			{
 				startTime = SystemClock.uptimeMillis();
 				playButton.setVisibility(View.INVISIBLE);
 				customHandler.postDelayed(updateTimerThread, 0);
@@ -190,21 +223,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				noteHandler.postDelayed(updateMatchNotifications, 0);
 			}
 		});
-
-		pauseButton = (Button) findViewById(R.id.pauseButton);
-
-		pauseButton.setOnClickListener(new View.OnClickListener() {
-
-			public void onClick(View view) {
-
-				timeSwapBuff += timeInMilliseconds;
-				customHandler.removeCallbacks(updateTimerThread);
-
-			}
-		});
-		
-		//set the text of the teams
-		setText(team1,team2);
 		
 		// Instantiate the gesture detector with the
 		// application context and an implementation of
@@ -214,18 +232,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		// listener.
 		mDetector.setOnDoubleTapListener(this);
 		
-	}
-	
-	//change the text for each team home and away
-	public void setText(String team1, String team2)
-	{
-		//change the text to the specified name of each team.
-		TextView homeTeam = (TextView) findViewById(R.id.team1);
-	    homeTeam.setText(team1);
-	    
-	    TextView awayTeam = (TextView) findViewById(R.id.team2);
-	    //awayTeam.setText(team2);
-	    
 	}
 	
 	//run the timer
@@ -242,8 +248,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			int secs = (int) (updatedTime / 1000);
 			int mins = secs / 60;
 			secs = secs % 60;
-			//update the display string
-			timerValue.setText("" + mins + ":"+ String.format("%02d", secs));
 
 			customHandler.postDelayed(this, 0);	
 		}
@@ -263,13 +267,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			int secs = (int) (updatedTimePos / 1000);
 			int mins = secs / 60;
 			secs = secs % 60;
-			int milliseconds = (int) (updatedTimePos % 1000);
 			//update the display string
-			
-			if(mins == 1)
-			{
-				Toast.makeText(UpdateMatchStats.this, "Yay",Toast.LENGTH_SHORT).show();
-			}
 
 			posessionHandler.postDelayed(this, 0);	
 		}
@@ -290,11 +288,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			int mins = secs / 60;
 			secs = secs % 60;
 			//update the display string
-			
-			if(mins == 2)
-			{
-				Toast.makeText(UpdateMatchStats.this, "Notification",Toast.LENGTH_SHORT).show();
-			}
 
 			noteHandler.postDelayed(this, 0);	
 		}
@@ -326,18 +319,33 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			
 			if(countRightSwipes == 1)
 			{
-				swipeUpdate.setText(team1 + " in possession");
+				pitch1.setImageResource(R.drawable.home_pos);
+				swipeUpdate.setText(homeTeam + " in possession");
 				awayTeamStats = false;
 				homeTeamStats = true;
+				//reset the attack bool
+				homeAttack = false;
 			}
-			else if(countRightSwipes == 2)
+			
+			if(countRightSwipes == 2)
 			{
-				swipeUpdate.setText(team1 + " is attacking");
+				pitch1.setImageResource(R.drawable.home_attack);
+				swipeUpdate.setText(homeTeam + " is attacking");
+				//set the boolean for this team to be true eg attacking
+				homeAttack = true;
 			}
 			
 			if(countRightSwipes == 3)
 			{
-				Toast.makeText(UpdateMatchStats.this, "Yay",Toast.LENGTH_SHORT).show();
+				pitch1.setImageResource(R.drawable.away_goal_kick);
+				swipeUpdate.setText(homeTeam + " scored");
+				teamAPoints++;
+				homePoints.setText(" " + teamAPoints);
+				//away team gets posession because home team just scored.
+				awayTeamStats = true;
+				homeTeamStats = false;
+				swipeUpdate.setText("Goal kick to " + awayTeam);
+				
 			}
 		}
 		else if(velocityX < 0 && velocityY < 0)
@@ -350,26 +358,64 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			
 			if(countLeftSwipes == 1)
 			{
-				swipeUpdate.setText(team2 + " in possession");
+				swipeUpdate.setText(awayTeam + " in possession");
+				pitch1.setImageResource(R.drawable.away_pos);
 				awayTeamStats = true;
 				homeTeamStats = false;
+				//reset the attack bools also
+				homeAttack = false;
 			}
-			else if(countLeftSwipes ==2)
+			
+			if(countLeftSwipes == 2)
 			{
-				swipeUpdate.setText(team2 + " is attacking");
+				pitch1.setImageResource(R.drawable.away_attack);
+				swipeUpdate.setText(awayTeam + " is attacking");
+				
+				//attacking team
+				awayAttack = true;
 			}
 			
 			if(countLeftSwipes == 3)
 			{
-				Toast.makeText(UpdateMatchStats.this, "Yay",Toast.LENGTH_SHORT).show();
+				pitch1.setImageResource(R.drawable.home_goal_kick);
+				swipeUpdate.setText(awayTeam + " scored");
+				teamBPoints++;
+				awayPoints.setText(" " + teamBPoints);
+				awayTeamStats = false;
+				homeTeamStats = true;
+				swipeUpdate.setText("Goal kick to " + homeTeam);
+				
 			}
 		}
 		return true;
 	}
 
 	@Override
-	public void onLongPress(MotionEvent event) {
-		takePhoto();
+	public void onLongPress(MotionEvent event) 
+	{
+		Log.e("Entered Method","Hello");
+		//update teams goals when there is a double tap
+		if (teamBGoals == 0 && teamAGoals == 0) 
+		{
+			Log.e("Home Goals", " " + teamAGoals);
+		} 
+		else 
+		{
+			Log.e("Home Goals", " " + homeAttack);
+			
+			if (homeAttack == true) 
+			{
+				teamAGoals++;
+				Log.e("Home Goals", " " + teamAGoals);
+				
+			}
+
+			if (awayAttack == true) 
+			{
+				teamBGoals++;
+				Log.e("Home Goals", " " + teamAGoals);
+			}
+		}
 	}
 
 	@Override
@@ -407,19 +453,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	@Override
 	public boolean onDoubleTap(MotionEvent event) 
 	{
-		Boolean selectSub = false;
-		Boolean selectCard = false;
 		
-		selectSub = true;
-		
-		if(selectSub)
-		{
-			Toast.makeText(UpdateMatchStats.this,"Sub on/off",Toast.LENGTH_SHORT).show();
-		}
-		else if(selectCard)
-		{
-			Toast.makeText(UpdateMatchStats.this,"Card yellow/black/red",Toast.LENGTH_SHORT).show();
-		}
 		return true;
 	}
 
@@ -445,7 +479,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	//gets the fixture data from the database
 	public void getData(String fixture_id,String home, String away,String venue, String comp, String ref) 
 	{
-		InputStream input = null;
 		JSONArray json = new JSONArray();
 		try 
 		{
@@ -455,8 +488,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			createMatch.put("Venue", venue);
 			createMatch.put("Competition", comp);
 			createMatch.put("Referee", ref);
-			
-			
+
 			json.put(0, createMatch);
 		} 
 		catch (JSONException e) {
@@ -466,17 +498,15 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		
 		HttpClient client = new DefaultHttpClient();
 		HttpResponse response;
+		
 		try 
 		{
 			HttpPost post = new HttpPost(
 					"http://ciaranmcmanus.server2.eu/insertInto.php");
 			List<NameValuePair> nVP = new ArrayList<NameValuePair>(2);
 			
-			nVP.add(new BasicNameValuePair("json", json.toString())); // studentJson
-																		// is
-																		// the
-																		// JSON
-																		// input
+			nVP.add(new BasicNameValuePair("json", json.toString()));
+
 
 			post.setEntity(new UrlEncodedFormEntity(nVP));
 			response = client.execute(post);
@@ -484,10 +514,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			if (response != null) 
 			{
 				
-				InputStream in = response.getEntity().getContent(); // Get the
-																	// data in
-																	// the
-																	// entity
+				InputStream in = response.getEntity().getContent();
 
 				BufferedReader reader = new BufferedReader(new InputStreamReader(in, "iso-8859-1"), 8);
 				StringBuilder sb = new StringBuilder();
@@ -500,8 +527,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 
 
 				fixtureResult = sb.toString();
-
-				awayTeamText.setText(fixtureResult);
 			}
 
 		} catch (Exception e) {
@@ -517,32 +542,53 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	public void takePhoto()
 	{
 		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-		startActivityForResult(intent,0);
+		File photo = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "picture.jpg");
+		imageUri = Uri.fromFile(photo);
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+		
+		startActivityForResult(intent,TAKE_PICTURE);
 	}
 	
+	/*
 	@Override 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		if(requestCode == 0)
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if(resultCode == Activity.RESULT_OK)
 		{
-			Bitmap img = (Bitmap) data.getExtras().get("data");
+			Uri selectedImage = imageUri;
+			getContentResolver().notifyChange(selectedImage, null);
 			
+			ContentResolver cr = getContentResolver();
+			Bitmap bitmap;
+			
+			try
+			{
+				bitmap = MediaStore.Images.Media.getBitmap(cr, selectedImage);
+				Toast.makeText(UpdateMatchStats.this, selectedImage.toString(), Toast.LENGTH_SHORT).show();
+				
+			}catch(Exception e)
+			{
+				
+			}
 		}
-	}
 
+	}
+	*/
+	
 	@Override
-	public void onSensorChanged(SensorEvent event) {
+	public void onSensorChanged(SensorEvent event) 
+	{
 		// TODO Auto-generated method stub
-		Log.e("X", "==" + event.values[1]);
-		Log.e("Y", "==" + event.values[1]);
-		Log.e("Z", "==" + event.values[2]);
 		
 		float xVal = 8.0f;
 		float yVal = 8.0f;
 		
-		if(event.values[1] > xVal && event.values[2] > yVal)
+		if(event.values[0] > xVal && event.values[1] > yVal && counter == 0)
 		{
-			takePhoto();
+			counter++;
+			//takePhoto();
 		}
 		
 		
