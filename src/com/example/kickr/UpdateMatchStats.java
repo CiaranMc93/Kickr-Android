@@ -23,6 +23,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -38,10 +44,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListener, OnGestureListener {
+public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListener, OnGestureListener, SensorEventListener {
 
 	private static final String DEBUG_TAG = "Gestures";
 	private GestureDetectorCompat mDetector;
+	
+	Sensor accelerate;
+	SensorManager sm;
 	
 	JSONObject createMatch = new JSONObject();
 	
@@ -49,9 +58,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	
 	
 	String fixtureResult;
-	
-	
-	
 	
 	//count swipe functionality
 	int countRightSwipes;
@@ -133,6 +139,19 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		swipeUpdate = (Button) findViewById(R.id.updateUser);
 		
 		awayTeamText = (TextView) findViewById(R.id.team2);
+		
+		
+		sm = (SensorManager) getSystemService(SENSOR_SERVICE);
+		accelerate = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		sm.registerListener(this, accelerate,SensorManager.SENSOR_DELAY_NORMAL);
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) 
@@ -350,7 +369,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 
 	@Override
 	public void onLongPress(MotionEvent event) {
-		Toast.makeText(UpdateMatchStats.this,"Handle Subs",Toast.LENGTH_SHORT).show();
+		takePhoto();
 	}
 
 	@Override
@@ -452,14 +471,12 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			HttpPost post = new HttpPost(
 					"http://ciaranmcmanus.server2.eu/insertInto.php");
 			List<NameValuePair> nVP = new ArrayList<NameValuePair>(2);
+			
 			nVP.add(new BasicNameValuePair("json", json.toString())); // studentJson
 																		// is
 																		// the
 																		// JSON
 																		// input
-
-			// student.Json.toString() produces the correct JSON
-			// [{"studentId":"2","class":"2a","dbname":"testDb"}]
 
 			post.setEntity(new UrlEncodedFormEntity(nVP));
 			response = client.execute(post);
@@ -490,55 +507,50 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		} catch (Exception e) {
 			Log.e("log tag", "Error in Http connection" + e.toString());
 		}
- 
-
-		/*
-		// try catch hhtp client request
-		HttpClient client = new DefaultHttpClient();
-		HttpResponse response;
-		
-		try
-		{
-		 HttpPost post = new HttpPost("http://ciaranmcmanus.server2.eu/insertInto.php?name=");
-		 List<NameValuePair> nVP = new ArrayList<NameValuePair>(2);  
-		 nVP.add(new BasicNameValuePair("json", json.toString()));  //studentJson is the JSON input
-
-		//student.Json.toString() produces the correct JSON [{"studentId":"2","class":"2a","dbname":"testDb"}]
-
-		 post.setEntity(new UrlEncodedFormEntity(nVP));
-		 response = client.execute(post);
-		 
-			 if(response != null)
-			 {
-				 Log.e("Not Null","Yes");
-                InputStream in = response.getEntity().getContent(); //Get the data in the entity
-                 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input,"iso-8859-1"),8);
-     			StringBuilder sb = new StringBuilder();
-     			String line = null;
-     			while((line = reader.readLine()) != null)
-     			{
-     				sb.append(line + "\n");
-     			}
-     			
-     			in.close();
-     			
-     			fixtureResult = sb.toString();
-     			
-     			awayTeamText.setText(fixtureResult);
-             }
-
-		} 
-		catch (Exception e) 
-		{
-			Log.e("log tag", "Error in Http connection" + e.toString());
-		}
-		
-		*/
 	}
 	
 	public void sendData()
 	{
+		
+	}
+	
+	public void takePhoto()
+	{
+		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+		startActivityForResult(intent,0);
+	}
+	
+	@Override 
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		if(requestCode == 0)
+		{
+			Bitmap img = (Bitmap) data.getExtras().get("data");
+			
+		}
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		// TODO Auto-generated method stub
+		Log.e("X", "==" + event.values[1]);
+		Log.e("Y", "==" + event.values[1]);
+		Log.e("Z", "==" + event.values[2]);
+		
+		float xVal = 8.0f;
+		float yVal = 8.0f;
+		
+		if(event.values[1] > xVal && event.values[2] > yVal)
+		{
+			takePhoto();
+		}
+		
+		
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// TODO Auto-generated method stub
 		
 	}
 }
