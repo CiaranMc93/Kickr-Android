@@ -47,6 +47,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	private Uri imageUri;
 	
 	Boolean sendTrue = false;
+	int matchID;
 	
 	Sensor accelerate;
 	SensorManager sm;
@@ -96,8 +97,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	//count variable
 	int count = 0;
 	
-	//display the time
-	private TextView timerValue;
 	private long startTime = 0L;
 	//handle the time
 	private Handler customHandler = new Handler();
@@ -165,8 +164,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		homeAttack = false;
 		awayAttack = false;
 		
-		counter = 0;
-		
 		//default home team to have posession
 		homeTeamStats = true;
 		
@@ -197,11 +194,13 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		    
 		    //set the home team strings
 		    homeTeam1.setText(homeTeam);
-		    //awayTeam1.setText(awayTeam);
+		    awayTeam1.setText(awayTeam);
 		    
 		}
 		
-		createMatch(fixture_id);
+		matchID = Integer.parseInt(fixture_id);
+		
+		createMatch();
 		
 		// change the image
 		// button functionality
@@ -258,7 +257,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			
 			if(sendTrue == false && secs == 30)
 			{
-				sendData(secs);
+				sendData(secs,mins);
 				sendTrue = true;
 			}
 
@@ -358,6 +357,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				//away team gets posession because home team just scored.
 				awayTeamStats = true;
 				homeTeamStats = false;
+				homeAttack = true;
 				swipeUpdate.setText("Goal kick to " + awayTeam);
 			}
 			
@@ -377,7 +377,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				awayTeamStats = true;
 				homeTeamStats = false;
 				//reset the attack bools also
-				homeAttack = false;
+				awayAttack = false;
 			}
 			
 			if(countLeftSwipes == 2)
@@ -397,7 +397,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				awayPoints.setText(" " + teamBPoints);
 				awayTeamStats = false;
 				homeTeamStats = true;
-				swipeUpdate.setText("Goal kick to " + homeTeam);			
+				swipeUpdate.setText("Goal kick to " + homeTeam);
+				awayAttack = false;
 			}	
 		}
 		return true;
@@ -419,14 +420,24 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			{
 				teamAGoals++;
 				pitch1.setImageResource(R.drawable.away_goal_kick);
-				swipeUpdate.setText(awayTeam + " goal scored");
+				swipeUpdate.setText(homeTeam + " goal scored");
+				
+				homeTeamStats = false;
+				awayTeamStats = true;
+				awayAttack = false;
+				
 			}
 
 			if (awayAttack == true) 
 			{
 				teamBGoals++;
 				pitch1.setImageResource(R.drawable.home_goal_kick);
-				swipeUpdate.setText(awayTeam + "goal scored");
+				swipeUpdate.setText(awayTeam + " goal scored");
+				
+				awayTeamStats = false;
+				homeTeamStats = true;
+				//make sure team isnt attacking
+				awayAttack = false;
 			}
 		}
 	}
@@ -490,99 +501,14 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	}
 	
 	//gets the fixture data from the database
-	public void createMatch(String fixture_id) 
+	public void createMatch() 
 	{
+		
 		JSONArray json = new JSONArray();
 		try 
 		{
 			createMatch.put("FixtureID", fixture_id);
-
-			json.put(0, createMatch);
-		} 
-		catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		HttpClient client = new DefaultHttpClient();
-		HttpResponse response;
-		
-		try 
-		{
-			HttpPost post = new HttpPost(
-					"http://ciaranmcmanus.server2.eu/insertInto.php");
-			List<NameValuePair> nVP = new ArrayList<NameValuePair>(2);
-			
-			nVP.add(new BasicNameValuePair("json", json.toString()));
-
-
-			post.setEntity(new UrlEncodedFormEntity(nVP));
-			response = client.execute(post);
-			
-			if (response != null) 
-			{
-				
-				InputStream in = response.getEntity().getContent();
-
-				BufferedReader reader = new BufferedReader(new InputStreamReader(in, "iso-8859-1"), 8);
-				StringBuilder sb = new StringBuilder();
-				String line = null;
-				while ((line = reader.readLine()) != null) 
-				{
-					sb.append(line + "\n");
-				}
-				in.close();
-
-
-				fixtureResult = sb.toString();
-				
-				awayTeam1.setText(fixtureResult);
-			}
-
-		} catch (Exception e) {
-			Log.e("log tag", "Error in Http connection" + e.toString());
-		}
-	}
-	
-	public void sendData(int secs)
-	{
-		
-		JSONObject obj = new JSONObject();
-		try 
-		{
-			obj.put("teamAPoints", teamAPoints);
-			obj.put("teamBPoints", teamBPoints);
-			obj.put("teamAGoals", teamAGoals);
-			obj.put("teamBGoals", teamBGoals);
-			obj.put("homehandPasses", homehandPasses);
-			obj.put("awayhandPasses", awayhandPasses);
-		} 
-		catch (JSONException e1) 
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		JSONArray json = new JSONArray();
-
-		try 
-		{
-			json.put(0, obj);
-		} 
-		catch (JSONException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		Log.e("JSON", json.toString());
-		
-		
-		
-		/*
-		try 
-		{
-			createMatch.put("FixtureID", fixture_id);
+			createMatch.put("MatchID", matchID);
 
 			json.put(0, createMatch);
 		} 
@@ -618,16 +544,93 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 					sb.append(line + "\n");
 				}
 				in.close();
-
-
-				fixtureResult = sb.toString();		
+				
+				String created = sb.toString();
+				
+				Toast.makeText(UpdateMatchStats.this, created, Toast.LENGTH_SHORT).show();
 			}
 
 		} catch (Exception e) {
 			Log.e("log tag", "Error in Http connection" + e.toString());
 		}
+	}
+	
+	public void sendData(int secs,int mins)
+	{
+		//create the json object that is going to update the database with its contents
+		JSONObject obj = new JSONObject();
+		try 
+		{
+			obj.put("FixtureID", fixture_id);
+			obj.put("MatchID", matchID);
+			obj.put("teamAPoints", teamAPoints);
+			obj.put("teamBPoints", teamBPoints);
+			obj.put("teamAGoals", teamAGoals);
+			obj.put("teamBGoals", teamBGoals);
+			obj.put("homehandPasses", homehandPasses);
+			obj.put("awayhandPasses", awayhandPasses);
+			obj.put("matchMins", mins);
+		} 
+		catch (JSONException e1) 
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		JSONArray json = new JSONArray();
+
+		try 
+		{
+			json.put(0, obj);
+		} 
+		catch (JSONException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.e("JSON", json.toString());
 		
-		*/
+		
+		HttpClient client = new DefaultHttpClient();
+		HttpResponse response;
+		
+		try 
+		{
+			HttpPost post = new HttpPost("http://ciaranmcmanus.server2.eu/updateMatches.php");
+			List<NameValuePair> nVP = new ArrayList<NameValuePair>(2);
+			
+			nVP.add(new BasicNameValuePair("json", json.toString()));
+
+
+			post.setEntity(new UrlEncodedFormEntity(nVP));
+			response = client.execute(post);
+			
+			if (response != null) 
+			{
+				
+				InputStream in = response.getEntity().getContent();
+
+				BufferedReader reader = new BufferedReader(new InputStreamReader(in, "iso-8859-1"), 8);
+				StringBuilder sb = new StringBuilder();
+				String line = null;
+				while ((line = reader.readLine()) != null) 
+				{
+					sb.append(line + "\n");
+				}
+				in.close();
+
+				String fixtureResult2 = sb.toString();	
+				
+				Toast.makeText(UpdateMatchStats.this, fixtureResult2, Toast.LENGTH_SHORT).show();
+
+			}
+
+		} catch (Exception e) 
+		{
+			Log.e("log tag", "Error in Http connection" + e.toString());
+		}
+
 	}
 	
 	public void takePhoto()
