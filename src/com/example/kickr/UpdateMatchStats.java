@@ -46,8 +46,13 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	private static int TAKE_PICTURE = 1;
 	private Uri imageUri;
 	
+	Boolean sendTrue = false;
+	
 	Sensor accelerate;
 	SensorManager sm;
+	
+	JSONArray updateMatch;
+	JSONObject matchStats;
 	
 	//image view of the pitch
 	ImageView pitch1;
@@ -189,17 +194,14 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			fixture_id = extras.getString("FixtureID");
 		    homeTeam = extras.getString("Home");
 		    awayTeam = extras.getString("Away");
-		    venue = extras.getString("Venue");
-		    referee = extras.getString("Referee");
-		    competition = extras.getString("Competition");
 		    
 		    //set the home team strings
 		    homeTeam1.setText(homeTeam);
-		    awayTeam1.setText(awayTeam);
+		    //awayTeam1.setText(awayTeam);
 		    
 		}
 		
-		getData(fixture_id,homeTeam,awayTeam,venue,competition,referee);
+		createMatch(fixture_id);
 		
 		// change the image
 		// button functionality
@@ -248,6 +250,18 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			int secs = (int) (updatedTime / 1000);
 			int mins = secs / 60;
 			secs = secs % 60;
+			
+			if(secs == 45)
+			{
+				sendTrue = false;
+			}
+			
+			if(sendTrue == false && secs == 30)
+			{
+				sendData(secs);
+				sendTrue = true;
+			}
+
 
 			customHandler.postDelayed(this, 0);	
 		}
@@ -345,8 +359,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				awayTeamStats = true;
 				homeTeamStats = false;
 				swipeUpdate.setText("Goal kick to " + awayTeam);
-				
 			}
+			
 		}
 		else if(velocityX < 0 && velocityY < 0)
 		{
@@ -383,9 +397,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				awayPoints.setText(" " + teamBPoints);
 				awayTeamStats = false;
 				homeTeamStats = true;
-				swipeUpdate.setText("Goal kick to " + homeTeam);
-				
-			}
+				swipeUpdate.setText("Goal kick to " + homeTeam);			
+			}	
 		}
 		return true;
 	}
@@ -393,27 +406,27 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	@Override
 	public void onLongPress(MotionEvent event) 
 	{
-		Log.e("Entered Method","Hello");
 		//update teams goals when there is a double tap
-		if (teamBGoals == 0 && teamAGoals == 0) 
+		//make sure there is a condition that doesnt allow goals to be updated
+		if (homeAttack == false && awayAttack == false) 
 		{
-			Log.e("Home Goals", " " + teamAGoals);
+			
 		} 
 		else 
 		{
-			Log.e("Home Goals", " " + homeAttack);
-			
+			//update home and away goals where the condition is true
 			if (homeAttack == true) 
 			{
 				teamAGoals++;
-				Log.e("Home Goals", " " + teamAGoals);
-				
+				pitch1.setImageResource(R.drawable.away_goal_kick);
+				swipeUpdate.setText(awayTeam + " goal scored");
 			}
 
 			if (awayAttack == true) 
 			{
 				teamBGoals++;
-				Log.e("Home Goals", " " + teamAGoals);
+				pitch1.setImageResource(R.drawable.home_goal_kick);
+				swipeUpdate.setText(awayTeam + "goal scored");
 			}
 		}
 	}
@@ -444,8 +457,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			
 			if(awayTeamStats == true)
 			{
-				awayhandPasses++;
-			}
+				awayhandPasses++;		
+			}		
 		}
 		return true;
 	}
@@ -477,17 +490,12 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	}
 	
 	//gets the fixture data from the database
-	public void getData(String fixture_id,String home, String away,String venue, String comp, String ref) 
+	public void createMatch(String fixture_id) 
 	{
 		JSONArray json = new JSONArray();
 		try 
 		{
 			createMatch.put("FixtureID", fixture_id);
-			createMatch.put("Home",home);
-			createMatch.put("Away", away);
-			createMatch.put("Venue", venue);
-			createMatch.put("Competition", comp);
-			createMatch.put("Referee", ref);
 
 			json.put(0, createMatch);
 		} 
@@ -527,6 +535,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 
 
 				fixtureResult = sb.toString();
+				
+				awayTeam1.setText(fixtureResult);
 			}
 
 		} catch (Exception e) {
@@ -534,9 +544,90 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		}
 	}
 	
-	public void sendData()
+	public void sendData(int secs)
 	{
 		
+		JSONObject obj = new JSONObject();
+		try 
+		{
+			obj.put("teamAPoints", teamAPoints);
+			obj.put("teamBPoints", teamBPoints);
+			obj.put("teamAGoals", teamAGoals);
+			obj.put("teamBGoals", teamBGoals);
+			obj.put("homehandPasses", homehandPasses);
+			obj.put("awayhandPasses", awayhandPasses);
+		} 
+		catch (JSONException e1) 
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		JSONArray json = new JSONArray();
+
+		try 
+		{
+			json.put(0, obj);
+		} 
+		catch (JSONException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.e("JSON", json.toString());
+		
+		
+		
+		/*
+		try 
+		{
+			createMatch.put("FixtureID", fixture_id);
+
+			json.put(0, createMatch);
+		} 
+		catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		HttpClient client = new DefaultHttpClient();
+		HttpResponse response;
+		
+		try 
+		{
+			HttpPost post = new HttpPost("http://ciaranmcmanus.server2.eu/insertInto.php");
+			List<NameValuePair> nVP = new ArrayList<NameValuePair>(2);
+			
+			nVP.add(new BasicNameValuePair("json", json.toString()));
+
+
+			post.setEntity(new UrlEncodedFormEntity(nVP));
+			response = client.execute(post);
+			
+			if (response != null) 
+			{
+				
+				InputStream in = response.getEntity().getContent();
+
+				BufferedReader reader = new BufferedReader(new InputStreamReader(in, "iso-8859-1"), 8);
+				StringBuilder sb = new StringBuilder();
+				String line = null;
+				while ((line = reader.readLine()) != null) 
+				{
+					sb.append(line + "\n");
+				}
+				in.close();
+
+
+				fixtureResult = sb.toString();		
+			}
+
+		} catch (Exception e) {
+			Log.e("log tag", "Error in Http connection" + e.toString());
+		}
+		
+		*/
 	}
 	
 	public void takePhoto()

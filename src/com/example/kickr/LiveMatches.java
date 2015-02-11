@@ -106,15 +106,17 @@ public class LiveMatches extends Base_Activity
 				
 				// set up the dynamic buttons
 				Button btn = new Button(this);
-				btn.setLayoutParams((new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT)));
+				btn.setLayoutParams((new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT)));
+				btn.setPadding(0, 0, 0, 0);
+				btn.setMaxLines(1);
 				btn.setId(i);
-				btn.setText(mins + " " + home + " " + goalsHome + "-" + pointsHome + " " + goalsAway + "-" + pointsAway + " " + away);
+				btn.setText(mins + "min" + " " + home + " " + goalsHome + "-" + pointsHome + " | " + goalsAway + "-" + pointsAway + " " + away);
 				btn.setBackgroundColor(Color.TRANSPARENT);
 				il.addView(btn);
 				
 				//add a divider to show the buttons
 				TextView divider = new TextView(this);
-				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 				divider.setLayoutParams(lp);
 				divider.setBackgroundColor(Color.parseColor("#B2C5D1"));
 				il.addView(divider);

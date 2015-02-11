@@ -137,6 +137,7 @@ public class Fixtures extends Base_Activity
 				Button btn = new Button(this);
 				btn.setLayoutParams((new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT)));
 				btn.setId(i);
+				btn.setMaxLines(1);
 				btn.setText(home + " vs. " + away);
 				btn.setBackgroundColor(Color.TRANSPARENT);
 				il.addView(btn);
