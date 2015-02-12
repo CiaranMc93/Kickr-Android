@@ -4,9 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -18,6 +21,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -33,10 +39,15 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +59,11 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	
 	Boolean sendTrue = false;
 	int matchID;
+	
+	String created;
+	private AlertDialog.Builder dialogBuilder;
+	
+	Boolean matchInProgress;
 	
 	Sensor accelerate;
 	SensorManager sm;
@@ -79,6 +95,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	//make boolean for home and away team stats
 	Boolean homeTeamStats;
 	Boolean awayTeamStats;
+	
 	//boolean values for if the home team and away team are attacking of not
 	Boolean homeAttack;
 	Boolean awayAttack;
@@ -93,9 +110,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	
 	//swipe count image
 	Button swipeUpdate;
-	
-	//count variable
-	int count = 0;
 	
 	private long startTime = 0L;
 	//handle the time
@@ -355,10 +369,11 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				teamAPoints++;
 				homePoints.setText(" " + teamAPoints);
 				//away team gets posession because home team just scored.
-				awayTeamStats = true;
+				awayTeamStats = false;
 				homeTeamStats = false;
 				homeAttack = true;
 				swipeUpdate.setText("Goal kick to " + awayTeam);
+				
 			}
 			
 		}
@@ -396,9 +411,11 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				teamBPoints++;
 				awayPoints.setText(" " + teamBPoints);
 				awayTeamStats = false;
-				homeTeamStats = true;
+				homeTeamStats = false;
 				swipeUpdate.setText("Goal kick to " + homeTeam);
 				awayAttack = false;
+				
+				createDialog();
 			}	
 		}
 		return true;
@@ -420,12 +437,10 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			{
 				teamAGoals++;
 				pitch1.setImageResource(R.drawable.away_goal_kick);
-				swipeUpdate.setText(homeTeam + " goal scored");
+				swipeUpdate.setText(homeTeam + " goal scored");		
 				
-				homeTeamStats = false;
-				awayTeamStats = true;
-				awayAttack = false;
-				
+				//reset swipe count to be 0
+				countRightSwipes = 0;
 			}
 
 			if (awayAttack == true) 
@@ -434,10 +449,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				pitch1.setImageResource(R.drawable.home_goal_kick);
 				swipeUpdate.setText(awayTeam + " goal scored");
 				
-				awayTeamStats = false;
-				homeTeamStats = true;
-				//make sure team isnt attacking
-				awayAttack = false;
+				//reset swipe count to be 0
+				countLeftSwipes = 0;
 			}
 		}
 	}
@@ -543,9 +556,10 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				{
 					sb.append(line + "\n");
 				}
+				
 				in.close();
 				
-				String created = sb.toString();
+				created = sb.toString();
 				
 				Toast.makeText(UpdateMatchStats.this, created, Toast.LENGTH_SHORT).show();
 			}
@@ -691,6 +705,139 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 		// TODO Auto-generated method stub
+		
+	}
+		
+	
+	@SuppressLint("NewApi")
+	private void createDialog()
+	{
+		dialogBuilder = new AlertDialog.Builder(this);
+		
+		LayoutInflater inflater = this.getLayoutInflater();
+		
+		View v = inflater.inflate(R.layout.spinner_layout, null);
+		
+		Button btn = new Button(this);
+		btn.setText("Select a Player");
+		
+		
+		
+		dialogBuilder.setTitle("Select a player");
+		
+		dialogBuilder.setView(v);
+		
+		dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) 
+			{
+				// TODO Auto-generated method stub
+				Toast.makeText(UpdateMatchStats.this, "Ok", Toast.LENGTH_SHORT).show();
+				
+			}
+			
+		});
+		
+		dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) 
+			{
+				// TODO Auto-generated method stub
+				Toast.makeText(UpdateMatchStats.this, "Cancel", Toast.LENGTH_SHORT).show();
+				
+			}
+		});
+		
+		AlertDialog dialogCreate = dialogBuilder.create();
+		dialogCreate.show();
+		
+		Spinner spin1 = (Spinner)v.findViewById(R.id.spinner);
+		
+		
+		ArrayList<String> list1 = new ArrayList<String>();
+		
+		String fixtureResult = "";
+		
+		InputStream input = null;
+		
+		try
+		{
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpPost httppost = new HttpPost("http://ciaranmcmanus.server2.eu/getAllPlayers.php");
+			HttpResponse response = httpclient.execute(httppost);
+			HttpEntity entity = response.getEntity();
+			input = entity.getContent();
+			
+		}
+		catch(Exception e)
+		{
+			Log.e("log tag","Error in Http connection" + e.toString());
+		}
+		//convert response to string
+		try
+		{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(input,"iso-8859-1"),8);
+			StringBuilder sb = new StringBuilder();
+			String line = null;
+			while((line = reader.readLine()) != null)
+			{
+				sb.append(line + "\n");
+			}
+			input.close();
+			
+			fixtureResult = sb.toString();
+		}
+		catch(Exception e)
+		{
+			Log.e("log tag","Error converting result" + e.toString());
+		}
+		
+		String player;
+		//parse the JSON data that returns information needed
+		try 
+		{
+			String s = "";
+			JSONArray jArray = new JSONArray(fixtureResult);
+
+			// loop through the array
+			for (int i = 0; i < jArray.length(); i++) 
+			{
+
+				// get the specific object in the JSON
+				JSONObject json = jArray.getJSONObject(i);
+				player = json.getString("player_name");
+				list1.add(player);
+				
+			}
+		} catch (JSONException e) {
+
+		}
+		
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list1);
+		
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		
+		spin1.setAdapter(adapter);
+		
+		spin1.setOnItemSelectedListener(new OnItemSelectedListener(){
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		
 	}
 }

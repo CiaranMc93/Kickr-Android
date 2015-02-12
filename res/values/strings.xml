@@ -56,5 +56,8 @@
     <string name="common">Update Match</string>
     <string name="confirm">Confirm</string>
     <string name="back">Back</string>
+    <string name="missile">Fire Missile</string>
+    <string name="fire">Fire</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
