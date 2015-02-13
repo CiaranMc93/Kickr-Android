@@ -60,6 +60,10 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	Boolean sendTrue = false;
 	int matchID;
 	
+	//create variables to be used in order to get the chosen player by name
+	int getPlayer;
+	JSONArray jArray;
+	
 	String created;
 	private AlertDialog.Builder dialogBuilder;
 	
@@ -85,6 +89,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	//get rid of this eventually
 	TextView homePoints;
 	TextView awayPoints;
+	TextView homeGoals;
+	TextView awayGoals;
 	
 	String fixtureResult;
 	
@@ -111,6 +117,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	//swipe count image
 	Button swipeUpdate;
 	
+	//main timer
 	private long startTime = 0L;
 	//handle the time
 	private Handler customHandler = new Handler();
@@ -118,6 +125,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	long timeInMilliseconds = 0L;
 	long timeSwapBuff = 0L;
 	long updatedTime = 0L;
+	int minutes;
 	
 	//timer for posession
 	private long startTimePos = 0L;
@@ -194,6 +202,11 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		homePoints = (TextView) findViewById(R.id.homePoints);
 		awayPoints = (TextView) findViewById(R.id.awayPoints);
 		
+		//set text view of the goals
+		homeGoals = (TextView) findViewById(R.id.textView2);
+		awayGoals = (TextView) findViewById(R.id.textView1);
+		
+		//text views for points
 		sm = (SensorManager) getSystemService(SENSOR_SERVICE);
 		accelerate = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		sm.registerListener(this, accelerate,SensorManager.SENSOR_DELAY_NORMAL);		
@@ -211,9 +224,10 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		    awayTeam1.setText(awayTeam);
 		    
 		}
-		
+		//get the integer value of the match id
 		matchID = Integer.parseInt(fixture_id);
 		
+		//call to the method
 		createMatch();
 		
 		// change the image
@@ -263,6 +277,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			int secs = (int) (updatedTime / 1000);
 			int mins = secs / 60;
 			secs = secs % 60;
+			
+			minutes = mins;
 			
 			if(secs == 45)
 			{
@@ -415,7 +431,10 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				swipeUpdate.setText("Goal kick to " + homeTeam);
 				awayAttack = false;
 				
-				createDialog();
+				boolean point = true;
+				boolean goal = false;
+				
+				createDialog(awayTeam,point,goal);
 			}	
 		}
 		return true;
@@ -439,6 +458,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				pitch1.setImageResource(R.drawable.away_goal_kick);
 				swipeUpdate.setText(homeTeam + " goal scored");		
 				
+				homeGoals.setText("" + teamAGoals);
+				
 				//reset swipe count to be 0
 				countRightSwipes = 0;
 			}
@@ -448,6 +469,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				teamBGoals++;
 				pitch1.setImageResource(R.drawable.home_goal_kick);
 				swipeUpdate.setText(awayTeam + " goal scored");
+				awayGoals.setText("" + teamBGoals);
 				
 				//reset swipe count to be 0
 				countLeftSwipes = 0;
@@ -710,44 +732,57 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		
 	
 	@SuppressLint("NewApi")
-	private void createDialog()
+	private void createDialog(String teamName,final Boolean point,final Boolean goal)
 	{
+		
+		final ArrayList<String> list1 = new ArrayList<String>();
+		
+		//create the alert dialog
 		dialogBuilder = new AlertDialog.Builder(this);
-		
+		//create the layout that the alert will eventually get
 		LayoutInflater inflater = this.getLayoutInflater();
-		
+		//create the view for the layout
 		View v = inflater.inflate(R.layout.spinner_layout, null);
-		
-		Button btn = new Button(this);
-		btn.setText("Select a Player");
-		
-		
-		
+		//set title, add the view to the alert, set the positive button to have ok and cancel.
 		dialogBuilder.setTitle("Select a player");
-		
 		dialogBuilder.setView(v);
-		
-		dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			
-			
+		dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() 
+		{
 			@Override
 			public void onClick(DialogInterface dialog, int which) 
 			{
 				// TODO Auto-generated method stub
-				Toast.makeText(UpdateMatchStats.this, "Ok", Toast.LENGTH_SHORT).show();
 				
+				try 
+				{
+					JSONObject json = jArray.getJSONObject(getPlayer);
+					String player_id = json.getString("player_id");
+					
+					//call to the class that creates an event
+					createMatchEvent create = new createMatchEvent(fixture_id,player_id,point,goal,minutes);
+					//method to insert into the database
+					create.createEvent();
+					
+					Toast.makeText(UpdateMatchStats.this, create.createEvent() + " scored", Toast.LENGTH_SHORT).show();
+					
+				} 
+				catch (JSONException e) 
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
 		});
 		
-		dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			
-			
+		//cancel button
+		dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() 
+		{
 			@Override
 			public void onClick(DialogInterface dialog, int which) 
 			{
 				// TODO Auto-generated method stub
-				Toast.makeText(UpdateMatchStats.this, "Cancel", Toast.LENGTH_SHORT).show();
+				Toast.makeText(UpdateMatchStats.this, "You cancelled player selection", Toast.LENGTH_SHORT).show();
 				
 			}
 		});
@@ -757,9 +792,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		
 		Spinner spin1 = (Spinner)v.findViewById(R.id.spinner);
 		
-		
-		ArrayList<String> list1 = new ArrayList<String>();
-		
 		String fixtureResult = "";
 		
 		InputStream input = null;
@@ -767,7 +799,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		try
 		{
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost("http://ciaranmcmanus.server2.eu/getAllPlayers.php");
+			HttpPost httppost = new HttpPost("http://ciaranmcmanus.server2.eu/getAllPlayers.php?team_name=" + teamName);
 			HttpResponse response = httpclient.execute(httppost);
 			HttpEntity entity = response.getEntity();
 			input = entity.getContent();
@@ -797,11 +829,14 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		}
 		
 		String player;
+		JSONArray players = new JSONArray();
+		
 		//parse the JSON data that returns information needed
 		try 
 		{
-			String s = "";
-			JSONArray jArray = new JSONArray(fixtureResult);
+			jArray = new JSONArray(fixtureResult);
+			
+			Log.e("All Results", jArray.toString());
 
 			// loop through the array
 			for (int i = 0; i < jArray.length(); i++) 
@@ -810,15 +845,18 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				// get the specific object in the JSON
 				JSONObject json = jArray.getJSONObject(i);
 				player = json.getString("player_name");
-				list1.add(player);
-				
+
+				list1.add(player);	
 			}
-		} catch (JSONException e) {
+			
+			Log.e("Player Values",players.toString());
+		} catch (JSONException e) 
+		{
 
 		}
 		
+		//create the string adapter to hold the list of names coming from the database
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list1);
-		
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		
 		spin1.setAdapter(adapter);
@@ -829,7 +867,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
 				// TODO Auto-generated method stub
-				
+				//get which player has been attributed to an event
+				getPlayer = (int)id;
 			}
 
 			@Override

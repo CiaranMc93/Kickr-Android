@@ -48,8 +48,8 @@
     <string name="username">Username</string>
     <string name="swipe">Swipe to Update</string>
     <string name="posession">Posession</string>
-    <string name="points">Points</string>
-    <string name="goals">Goals</string>
+    <string name="points">Point</string>
+    <string name="goals">Goal</string>
     <string name="yellow">Yellow Cards</string>
     <string name="red">Red Cards</string>
     <string name="contribute">Contribute</string>
