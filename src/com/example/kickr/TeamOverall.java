@@ -16,7 +16,7 @@ public class TeamOverall extends FragmentActivity implements ActionBar.TabListen
 
 	ActionBar actionbar;
 	ViewPager viewpager;
-	FragmentPageAdapter ft;
+	TeamFragmentAdapter ft;
 	
 	String fixture_id;
 	
@@ -27,7 +27,7 @@ public class TeamOverall extends FragmentActivity implements ActionBar.TabListen
 		setContentView(R.layout.team_overall);
 		
 		viewpager = (ViewPager) findViewById(R.id.pager);
-		ft = new FragmentPageAdapter(getSupportFragmentManager());
+		ft = new TeamFragmentAdapter(getSupportFragmentManager());
 		
 		actionbar = getActionBar();
 		

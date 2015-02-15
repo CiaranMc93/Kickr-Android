@@ -59,5 +59,6 @@
     <string name="missile">Fire Missile</string>
     <string name="fire">Fire</string>
     <string name="cancel">Cancel</string>
+    <string name="addPlayer">Add Player</string>
 
 </resources>

@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -17,10 +18,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ActionBar.LayoutParams;
+import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class createMatchEvent 
+public class GetAndPostDataToServer 
 {
 
 	int match;
@@ -30,7 +39,9 @@ public class createMatchEvent
 	int minute;
 	String url;
 	
-	public createMatchEvent(String matchID, String playerID, boolean point, boolean goal,int mins) 
+	String http;
+	
+	public GetAndPostDataToServer(String matchID, String playerID, boolean point, boolean goal,int mins) 
 	{
 		// TODO Auto-generated constructor stub
 		match = Integer.parseInt(matchID);
@@ -41,7 +52,12 @@ public class createMatchEvent
 		
 	}
 	
-	public createMatchEvent(String matchID, String playerID, int point, int goal,String url) 
+	public GetAndPostDataToServer(String matchID, String playerID, int point, int goal,String url) 
+	{
+		// TODO Auto-generated constructor stub
+	}
+	
+	public GetAndPostDataToServer() 
 	{
 		// TODO Auto-generated constructor stub
 	}
@@ -75,8 +91,6 @@ public class createMatchEvent
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		Log.e("JSON", json.toString());
 
 		HttpClient client = new DefaultHttpClient();
 		HttpResponse response;
@@ -117,5 +131,50 @@ public class createMatchEvent
 		
 		return "";
 
+	}
+	
+	//method used for getting information from specific php files using a string passed in from other classes
+	public String getData(String http)
+	{
+		String fixtureResult = "";
+		
+		InputStream input = null;
+		
+		//try catch hhtp client request
+		try
+		{
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpPost httppost = new HttpPost("http://ciaranmcmanus.server2.eu/" + http);
+			HttpResponse response = httpclient.execute(httppost);
+			HttpEntity entity = response.getEntity();
+			input = entity.getContent();
+			
+		}
+		catch(Exception e)
+		{
+			Log.e("log tag","Error in Http connection" + e.toString());
+		}
+		//convert response to string
+		try
+		{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(input,"iso-8859-1"),8);
+			StringBuilder sb = new StringBuilder();
+			String line = null;
+			while((line = reader.readLine()) != null)
+			{
+				sb.append(line + "\n");
+			}
+			input.close();
+			
+			fixtureResult = sb.toString();
+			
+			return fixtureResult;
+		}
+		catch(Exception e)
+		{
+			Log.e("log tag","Error converting result" + e.toString());
+		}
+		
+		return "";
 	}
 }

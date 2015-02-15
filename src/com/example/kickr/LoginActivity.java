@@ -140,9 +140,10 @@ public class LoginActivity extends Base_Activity
 			JSONArray jsonRoot = new JSONArray(sb.toString());
 			//get the first object of the array
 			JSONObject rootOBJ = jsonRoot.getJSONObject(0);
+			
+			Toast.makeText(LoginActivity.this, rootOBJ.toString(), Toast.LENGTH_SHORT).show();
 
 			isSignedIn = true;
-			
 			
 			Intent i = new Intent(getApplicationContext(), UpdateMatchStats.class);
 			i.putExtra("FixtureID", fixture_id);
@@ -162,7 +163,7 @@ public class LoginActivity extends Base_Activity
 			
 			if(loginTrue == false)
 			{
-				TextView btn = new TextView(this);
+				Button btn = new Button(this);
 				btn.setLayoutParams((new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT)));
 				btn.setText(loginFail);
 				il.addView(btn);

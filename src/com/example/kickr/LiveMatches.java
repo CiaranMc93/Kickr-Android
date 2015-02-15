@@ -18,7 +18,9 @@ import android.content.Intent;
 import android.content.ClipData.Item;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,60 +40,48 @@ public class LiveMatches extends Base_Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.fixtures);
 		
 		StrictMode.enableDefaults();
 		
-		il = (LinearLayout) findViewById(R.id.live_matches);
+		il = (LinearLayout) findViewById(R.id.layoutButtons);
+		
+		final SwipeRefreshLayout swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+		swipe.setColorSchemeColors(Color.RED, Color.CYAN, Color.GREEN, Color.MAGENTA);
+		swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+		{
+			@Override
+			public void onRefresh() {
+				
+				swipe.setRefreshing(true);
+				(new Handler()).postDelayed(new Runnable() {
+					
+					@Override
+					public void run() {
+						
+						swipe.setRefreshing(false);	
+						//get the data again
+						il.removeAllViews();
+						getData();
+					}
+				},3000);
+			}
+		});
 		
 		getData();
 	}
 	
 	public void getData()
 	{
-		String loginResult = "";
+		GetAndPostDataToServer getMatches = new GetAndPostDataToServer();
 		
-		InputStream input = null;
-		
-		//try catch hhtp client request
-		try
-		{
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost("http://ciaranmcmanus.server2.eu/getAllMatches.php");
-			HttpResponse response = httpclient.execute(httppost);
-			HttpEntity entity = response.getEntity();
-			input = entity.getContent();
-			
-		}
-		catch(Exception e)
-		{
-			Log.e("log tag","Error in Http connection" + e.toString());
-			resultView.setText("Couldnt connect to database");
-		}
-		//convert response to string
-		try{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(input,"iso-8859-1"),8);
-			StringBuilder sb = new StringBuilder();
-			String line = null;
-			while((line = reader.readLine()) != null)
-			{
-				sb.append(line + "\n");
-			}
-			input.close();
-			
-			loginResult = sb.toString();
-		}
-		catch(Exception e)
-		{
-			Log.e("log tag","Error converting result" + e.toString());
-		}
-		
+		String jsonArrayString = getMatches.getData("getAllMatches.php").toString();
 		//parse the JSON data that returns information needed
 		try
 		{
 			String s = "";
 			
-			JSONArray jArray = new JSONArray(loginResult);
+			JSONArray jArray = new JSONArray(jsonArrayString);
 			//loop through the array
 			for(int i=0; i<jArray.length(); i++)
 			{

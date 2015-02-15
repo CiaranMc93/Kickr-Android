@@ -56,8 +56,8 @@ public class Fixtures extends Base_Activity
 		
 		final SwipeRefreshLayout swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
 		swipe.setColorSchemeColors(Color.RED, Color.CYAN, Color.GREEN, Color.MAGENTA);
-		swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
-			
+		swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+		{
 			@Override
 			public void onRefresh() {
 				
@@ -82,47 +82,14 @@ public class Fixtures extends Base_Activity
 	//gets the fixture data from the database
 	public void getData()
 	{
-		String fixtureResult = "";
+		GetAndPostDataToServer getFixtures = new GetAndPostDataToServer();
 		
-		InputStream input = null;
-		
-		//try catch hhtp client request
-		try
-		{
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost("http://ciaranmcmanus.server2.eu/getAllFixtures.php");
-			HttpResponse response = httpclient.execute(httppost);
-			HttpEntity entity = response.getEntity();
-			input = entity.getContent();
-			
-		}
-		catch(Exception e)
-		{
-			Log.e("log tag","Error in Http connection" + e.toString());
-		}
-		//convert response to string
-		try
-		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(input,"iso-8859-1"),8);
-			StringBuilder sb = new StringBuilder();
-			String line = null;
-			while((line = reader.readLine()) != null)
-			{
-				sb.append(line + "\n");
-			}
-			input.close();
-			
-			fixtureResult = sb.toString();
-		}
-		catch(Exception e)
-		{
-			Log.e("log tag","Error converting result" + e.toString());
-		}
-		
+		String jsonArrayString = getFixtures.getData("getAllFixtures.php").toString();
 		//parse the JSON data that returns information needed
-		try{
+		try
+		{
 			String s = "";
-			jArray = new JSONArray(fixtureResult);
+			jArray = new JSONArray(jsonArrayString);
 			
 			//loop through the array
 			for(int i=0; i<jArray.length(); i++)

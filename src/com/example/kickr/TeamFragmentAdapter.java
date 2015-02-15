@@ -6,12 +6,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class FragmentPageAdapter extends FragmentPagerAdapter {
-
-	//dynamic team name name
-	String teamName;
+public class TeamFragmentAdapter extends FragmentPagerAdapter {
 	
-	public FragmentPageAdapter(FragmentManager fm) {
+	public TeamFragmentAdapter(FragmentManager fm) {
 		super(fm);
 		// TODO Auto-generated constructor stub
 	}

@@ -60,6 +60,9 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	Boolean sendTrue = false;
 	int matchID;
 	
+	//make sure the play button is pressed
+	boolean update = false;
+	
 	//create variables to be used in order to get the chosen player by name
 	int getPlayer;
 	JSONArray jArray;
@@ -241,15 +244,15 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				playButton.setVisibility(View.INVISIBLE);
 				customHandler.postDelayed(updateTimerThread, 0);
 				
-				
 				//posession timer
 				startTimePos = SystemClock.uptimeMillis();
 				posessionHandler.postDelayed(updateMatchPosession, 0);
 				
-				
 				//notification timer
 				startTimeNotification = SystemClock.uptimeMillis();
 				noteHandler.postDelayed(updateMatchNotifications, 0);
+				
+				update = true;
 			}
 		});
 		
@@ -287,7 +290,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			
 			if(sendTrue == false && secs == 30)
 			{
-				sendData(secs,mins);
+				sendData(mins);
 				sendTrue = true;
 			}
 
@@ -357,85 +360,112 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	{
 		if(velocityX > 0 && velocityY > 0)
 		{
-			countLeftSwipes = 0;
-			countRightSwipes++;
-			
-			if(countRightSwipes == 1)
+			if(update == false)
 			{
-				pitch1.setImageResource(R.drawable.home_pos);
-				swipeUpdate.setText(homeTeam + " in possession");
-				awayTeamStats = false;
-				homeTeamStats = true;
-				//reset the attack bool
-				homeAttack = false;
-			}
-			
-			if(countRightSwipes == 2)
-			{
-				pitch1.setImageResource(R.drawable.home_attack);
-				swipeUpdate.setText(homeTeam + " is attacking");
-				//set the boolean for this team to be true eg attacking
-				homeAttack = true;
-			}
-			
-			if(countRightSwipes == 3)
-			{
-				pitch1.setImageResource(R.drawable.away_goal_kick);
-				swipeUpdate.setText(homeTeam + " scored");
-				teamAPoints++;
-				homePoints.setText(" " + teamAPoints);
-				//away team gets posession because home team just scored.
-				awayTeamStats = false;
-				homeTeamStats = false;
-				homeAttack = true;
-				swipeUpdate.setText("Goal kick to " + awayTeam);
 				
 			}
-			
+			else
+			{
+				countLeftSwipes = 0;
+				countRightSwipes++;
+				
+				if(countRightSwipes == 1)
+				{
+					pitch1.setImageResource(R.drawable.home_pos);
+					swipeUpdate.setText(homeTeam + " in possession");
+					awayTeamStats = false;
+					homeTeamStats = true;
+					//reset the attack bool
+					homeAttack = false;
+				}
+				
+				if(countRightSwipes == 2)
+				{
+					pitch1.setImageResource(R.drawable.home_attack);
+					swipeUpdate.setText(homeTeam + " is attacking");
+					//set the boolean for this team to be true eg attacking
+					homeAttack = true;
+				}
+				
+				if(countRightSwipes == 3)
+				{
+					pitch1.setImageResource(R.drawable.away_goal_kick);
+					swipeUpdate.setText(homeTeam + " scored");
+					teamAPoints++;
+					homePoints.setText(" " + teamAPoints);
+					
+					
+					//away team gets posession because home team just scored.
+					homeAttack = false;
+					awayTeamStats = false;
+					homeTeamStats = false;
+					
+					
+					swipeUpdate.setText("Goal kick to " + awayTeam);
+					
+					//create an event 
+					boolean point = true;
+					boolean goal = false;
+					
+					createDialog(homeTeam,point,goal);
+					
+				}
+			}
 		}
 		else if(velocityX < 0 && velocityY < 0)
 		{
-			//swipe is when user moves finger across touch pad right or left
-			//reset the swipes for home team
-			countRightSwipes = 0;
-			//count swipes for left team
-			countLeftSwipes++;
-			
-			if(countLeftSwipes == 1)
+			if(update == false)
 			{
-				swipeUpdate.setText(awayTeam + " in possession");
-				pitch1.setImageResource(R.drawable.away_pos);
-				awayTeamStats = true;
-				homeTeamStats = false;
-				//reset the attack bools also
-				awayAttack = false;
+				
 			}
-			
-			if(countLeftSwipes == 2)
+			else
 			{
-				pitch1.setImageResource(R.drawable.away_attack);
-				swipeUpdate.setText(awayTeam + " is attacking");
+				//swipe is when user moves finger across touch pad right or left
+				//reset the swipes for home team
+				countRightSwipes = 0;
+				//count swipes for left team
+				countLeftSwipes++;
 				
-				//attacking team
-				awayAttack = true;
+				if(countLeftSwipes == 1)
+				{
+					swipeUpdate.setText(awayTeam + " in possession");
+					pitch1.setImageResource(R.drawable.away_pos);
+					awayTeamStats = true;
+					homeTeamStats = false;
+					//reset the attack bools also
+					awayAttack = false;
+				}
+				
+				if(countLeftSwipes == 2)
+				{
+					pitch1.setImageResource(R.drawable.away_attack);
+					swipeUpdate.setText(awayTeam + " is attacking");
+					
+					//attacking team
+					awayAttack = true;
+				}
+				
+				if(countLeftSwipes == 3)
+				{
+					pitch1.setImageResource(R.drawable.home_goal_kick);
+					swipeUpdate.setText(awayTeam + " scored");
+					teamBPoints++;
+					awayPoints.setText(" " + teamBPoints);
+					
+					
+					homeAttack = false;
+					awayTeamStats = false;
+					homeTeamStats = false;
+					
+					
+					swipeUpdate.setText("Goal kick to " + homeTeam);
+
+					boolean point = true;
+					boolean goal = false;
+					
+					createDialog(awayTeam,point,goal);
+				}	
 			}
-			
-			if(countLeftSwipes == 3)
-			{
-				pitch1.setImageResource(R.drawable.home_goal_kick);
-				swipeUpdate.setText(awayTeam + " scored");
-				teamBPoints++;
-				awayPoints.setText(" " + teamBPoints);
-				awayTeamStats = false;
-				homeTeamStats = false;
-				swipeUpdate.setText("Goal kick to " + homeTeam);
-				awayAttack = false;
-				
-				boolean point = true;
-				boolean goal = false;
-				
-				createDialog(awayTeam,point,goal);
-			}	
 		}
 		return true;
 	}
@@ -462,6 +492,14 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				
 				//reset swipe count to be 0
 				countRightSwipes = 0;
+				homeAttack = false;
+				awayTeamStats = false;
+				homeTeamStats = false;
+				
+				boolean point = false;
+				boolean goal = true;
+				
+				createDialog(awayTeam,point,goal);
 			}
 
 			if (awayAttack == true) 
@@ -473,6 +511,14 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				
 				//reset swipe count to be 0
 				countLeftSwipes = 0;
+				awayAttack = false;
+				awayTeamStats = false;
+				homeTeamStats = false;
+				
+				boolean point = false;
+				boolean goal = true;
+				
+				createDialog(awayTeam,point,goal);
 			}
 		}
 	}
@@ -505,7 +551,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			{
 				awayhandPasses++;		
 			}		
-		}
+		};
 		return true;
 	}
 
@@ -586,12 +632,14 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				Toast.makeText(UpdateMatchStats.this, created, Toast.LENGTH_SHORT).show();
 			}
 
-		} catch (Exception e) {
+		} 
+		catch (Exception e) 
+		{
 			Log.e("log tag", "Error in Http connection" + e.toString());
 		}
 	}
 	
-	public void sendData(int secs,int mins)
+	public void sendData(int mins)
 	{
 		//create the json object that is going to update the database with its contents
 		JSONObject obj = new JSONObject();
@@ -624,9 +672,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		Log.e("JSON", json.toString());
-		
 		
 		HttpClient client = new DefaultHttpClient();
 		HttpResponse response;
@@ -759,11 +804,9 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 					String player_id = json.getString("player_id");
 					
 					//call to the class that creates an event
-					createMatchEvent create = new createMatchEvent(fixture_id,player_id,point,goal,minutes);
+					GetAndPostDataToServer create = new GetAndPostDataToServer(fixture_id,player_id,point,goal,minutes);
 					//method to insert into the database
 					create.createEvent();
-					
-					Toast.makeText(UpdateMatchStats.this, create.createEvent() + " scored", Toast.LENGTH_SHORT).show();
 					
 				} 
 				catch (JSONException e) 
@@ -835,8 +878,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		try 
 		{
 			jArray = new JSONArray(fixtureResult);
-			
-			Log.e("All Results", jArray.toString());
 
 			// loop through the array
 			for (int i = 0; i < jArray.length(); i++) 
@@ -849,8 +890,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				list1.add(player);	
 			}
 			
-			Log.e("Player Values",players.toString());
-		} catch (JSONException e) 
+		} 
+		catch (JSONException e) 
 		{
 
 		}
