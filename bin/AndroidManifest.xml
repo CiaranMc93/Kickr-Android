@@ -81,6 +81,10 @@
             android:name=".AddPlayersOverall"
             android:label="@string/app_name" >
         </activity>
+         <activity
+            android:name=".MatchInfoActivity"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>

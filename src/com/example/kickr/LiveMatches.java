@@ -34,6 +34,7 @@ public class LiveMatches extends Base_Activity
 {
 	//show the results 
 	TextView resultView;
+	JSONArray jArray;
 	
 	LinearLayout il;
 
@@ -81,7 +82,7 @@ public class LiveMatches extends Base_Activity
 		{
 			String s = "";
 			
-			JSONArray jArray = new JSONArray(jsonArrayString);
+			jArray = new JSONArray(jsonArrayString);
 			//loop through the array
 			for(int i=0; i<jArray.length(); i++)
 			{
@@ -117,7 +118,42 @@ public class LiveMatches extends Base_Activity
 					public void onClick(View v) 
 					{
 						//need to pass the match information to the match information screen
-						
+						try 
+						{
+							//get all the information needed to be sent to the next acitivity
+							JSONObject json = jArray.getJSONObject(v.getId());
+							Log.e("JSON", jArray.toString());
+							String home = json.getString("teamA");
+							String referee = json.getString("referee");
+							String venue = json.getString("matchVenue");
+							String away = json.getString("teamB");
+							String comp = json.getString("competition");
+							String mins = json.getString("match_mins");
+							String pointsHome = json.getString("teamApoints");
+							String goalsHome = json.getString("teamAgoals");
+							String pointsAway = json.getString("teamBpoints");
+							String goalsAway = json.getString("teamBgoals");
+							
+							//pass the match id to the fixture information
+							Intent i = new Intent(getApplicationContext(), MatchInfoActivity.class);
+							i.putExtra("Home",home);
+							i.putExtra("Away",away);
+							i.putExtra("Referee",referee);
+							i.putExtra("Competition",comp);
+							i.putExtra("Venue",venue);
+							i.putExtra("Minutes", mins);
+							i.putExtra("HomePoints", pointsHome);
+							i.putExtra("AwayPoints", pointsAway);
+							i.putExtra("HomeGoals", goalsHome);
+							i.putExtra("AwayGoals", goalsAway);
+							//start activity and pass in the bundle of information
+							startActivity(i);
+						} 
+						catch (JSONException e) 
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				});
 			}

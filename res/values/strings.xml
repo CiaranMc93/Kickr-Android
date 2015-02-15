@@ -60,5 +60,7 @@
     <string name="fire">Fire</string>
     <string name="cancel">Cancel</string>
     <string name="addPlayer">Add Player</string>
+    <string name="split">|</string>
+    <string name="mins">Minutes</string>
 
 </resources>

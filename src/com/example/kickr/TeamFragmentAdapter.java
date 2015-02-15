@@ -8,7 +8,8 @@ import android.view.MenuItem;
 
 public class TeamFragmentAdapter extends FragmentPagerAdapter {
 	
-	public TeamFragmentAdapter(FragmentManager fm) {
+	public TeamFragmentAdapter(FragmentManager fm) 
+	{
 		super(fm);
 		// TODO Auto-generated constructor stub
 	}

@@ -2,11 +2,13 @@ package com.example.kickr;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,13 +20,29 @@ public class TeamOverall extends FragmentActivity implements ActionBar.TabListen
 	ViewPager viewpager;
 	TeamFragmentAdapter ft;
 	
-	String fixture_id;
+	String teamName;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.team_overall);
+		
+		//a bundle with all the variables from the previous intent
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) 
+		{
+			if(extras.getString("Away") != null)
+			{
+				teamName = extras.getString("Away");
+			}
+			else
+			{
+				//get the values from the previous activity
+				teamName = extras.getString("Home");
+			}
+			
+		}
 		
 		viewpager = (ViewPager) findViewById(R.id.pager);
 		ft = new TeamFragmentAdapter(getSupportFragmentManager());
