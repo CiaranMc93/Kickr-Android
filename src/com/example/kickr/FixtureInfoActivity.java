@@ -85,11 +85,7 @@ public class FixtureInfoActivity extends Base_Activity
 				// Perform action on click
 
 				Intent i = new Intent(getApplicationContext(), TeamOverall.class);
-				Bundle bundle = new Bundle();
-				bundle.putString("Home", homeTeam);
-				// set Fragmentclass Arguments
-				TeamForm fragobj = new TeamForm();
-				fragobj.setArguments(bundle);
+				i.putExtra("Home",homeTeam);
 				startActivity(i);
 				
 				

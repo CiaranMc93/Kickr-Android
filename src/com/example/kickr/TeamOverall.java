@@ -44,6 +44,9 @@ public class TeamOverall extends FragmentActivity implements ActionBar.TabListen
 			
 		}
 		
+		Intent i = new Intent(getApplicationContext(), TeamForm.class);
+		i.putExtra("TeamName",teamName);
+		
 		viewpager = (ViewPager) findViewById(R.id.pager);
 		ft = new TeamFragmentAdapter(getSupportFragmentManager());
 		
