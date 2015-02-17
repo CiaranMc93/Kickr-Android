@@ -136,13 +136,7 @@ public class LoginActivity extends Base_Activity
 			
 			//close the buffer
 			in.close();
-			//get array of results that come back
-			JSONArray jsonRoot = new JSONArray(sb.toString());
-			//get the first object of the array
-			JSONObject rootOBJ = jsonRoot.getJSONObject(0);
 			
-			Toast.makeText(LoginActivity.this, rootOBJ.toString(), Toast.LENGTH_SHORT).show();
-
 			isSignedIn = true;
 			
 			Intent i = new Intent(getApplicationContext(), UpdateMatchStats.class);

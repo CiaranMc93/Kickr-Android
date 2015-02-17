@@ -62,5 +62,6 @@
     <string name="addPlayer">Add Player</string>
     <string name="split">|</string>
     <string name="mins">Minutes</string>
+    <string name="end_match">End Match</string>
 
 </resources>

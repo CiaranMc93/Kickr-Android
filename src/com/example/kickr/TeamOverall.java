@@ -28,25 +28,6 @@ public class TeamOverall extends FragmentActivity implements ActionBar.TabListen
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.team_overall);
 		
-		//a bundle with all the variables from the previous intent
-		Bundle extras = getIntent().getExtras();
-		if (extras != null) 
-		{
-			if(extras.getString("Away") != null)
-			{
-				teamName = extras.getString("Away");
-			}
-			else
-			{
-				//get the values from the previous activity
-				teamName = extras.getString("Home");
-			}
-			
-		}
-		
-		Intent i = new Intent(getApplicationContext(), TeamForm.class);
-		i.putExtra("TeamName",teamName);
-		
 		viewpager = (ViewPager) findViewById(R.id.pager);
 		ft = new TeamFragmentAdapter(getSupportFragmentManager());
 		

@@ -84,7 +84,7 @@ public class Fixtures extends Base_Activity
 	{
 		GetAndPostDataToServer getFixtures = new GetAndPostDataToServer();
 		
-		String jsonArrayString = getFixtures.getData("getAllFixtures.php").toString();
+		String jsonArrayString = getFixtures.doInBackground("getAllFixtures.php").toString();
 		//parse the JSON data that returns information needed
 		try
 		{

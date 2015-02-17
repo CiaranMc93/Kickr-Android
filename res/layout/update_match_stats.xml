@@ -41,9 +41,28 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/team1"
+            android:text="@string/goals"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/awayPoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/textView1"
             android:layout_alignBottom="@+id/textView1"
-            android:layout_alignRight="@+id/team1"
+            android:layout_alignParentRight="true"
+            android:text="@string/points"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/homePoints"
+            android:layout_alignBottom="@+id/homePoints"
+            android:layout_toLeftOf="@+id/awayPoints"
             android:text="@string/goals"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -58,25 +77,21 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/awayPoints"
+            android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/team2"
-            android:layout_marginTop="68dp"
-            android:layout_toRightOf="@+id/textView1"
-            android:text="@string/points"
+            android:layout_alignBottom="@+id/homePoints"
+            android:layout_centerHorizontal="true"
+            android:text="@string/mins"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
-            android:id="@+id/textView1"
+        <Button
+            android:id="@+id/endmatch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/awayPoints"
-            android:layout_alignBottom="@+id/awayPoints"
-            android:layout_marginLeft="24dp"
-            android:layout_toRightOf="@+id/updateUser"
-            android:text="@string/goals"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/end_match" />
 
     </RelativeLayout>
 

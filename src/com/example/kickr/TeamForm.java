@@ -10,6 +10,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class TeamForm extends Fragment 
@@ -27,10 +29,15 @@ public class TeamForm extends Fragment
 	String awayTeam;
 	String homeTeam;
 	
+	TextView text;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState)
 	{
+		View view = inflater.inflate(R.layout.team_form, container, false);
+		
+		text = (TextView) view.findViewById(R.id.teamName);
 		Bundle b = getActivity().getIntent().getExtras();
 		
 		//get either the away team or the home team based off of which is passed in
@@ -49,51 +56,30 @@ public class TeamForm extends Fragment
 		}
         
         //Log.e("String",team);
-		return inflater.inflate(R.layout.team_form,container,false);
+		return view;
 		
 	}
 	
 	public void getData(String teamName)
 	{
-		try{
-            
-			String link = "http://ciaranmcmanus.server2.eu/getTeamStats.php?teamName=" + teamName;
-			
-			URL url = new URL(link);
-			HttpClient client = new DefaultHttpClient();
-			HttpGet request = new HttpGet();
-			request.setURI(new URI(link));
-
-			HttpResponse response = client.execute(request);
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					response.getEntity().getContent()));
+		GetAndPostDataToServer getTeamStats = new GetAndPostDataToServer();
 		
-
-			StringBuffer sb = new StringBuffer("");
-			String line = "";
-			
-			while ((line = in.readLine()) != null) 
-			{
-				sb.append(line);
-	
-				break;
-			}
-			
-			//close the buffer
-			in.close();
-			//get array of results that come back
-			//JSONArray jsonRoot = new JSONArray(sb.toString());
-			//get the first object of the array
-			//JSONObject rootOBJ = jsonRoot.getJSONObject(0);
-			
-			Log.e("JSON", sb.toString());
-
-			
-		}
-		catch (Exception e) 
+		try 
 		{
-			Log.e("JSON", e.toString());
+			JSONArray json = new JSONArray(getTeamStats.getTeamStats(teamName).toString());
+			
+			JSONObject jsonOBJ = json.getJSONObject(0);
+			String team = jsonOBJ.get("team_name").toString();
+			String loc = jsonOBJ.get("team_location").toString();
+			
+			Intent i = new Intent(getActivity().getApplicationContext(), TeamOverall.class);
+			i.putExtra("Away", team);
+			i.putExtra("Away", loc);
+		} 
+		catch (JSONException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 			
 	}

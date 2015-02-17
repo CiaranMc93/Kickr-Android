@@ -76,7 +76,7 @@ public class LiveMatches extends Base_Activity
 	{
 		GetAndPostDataToServer getMatches = new GetAndPostDataToServer();
 		
-		String jsonArrayString = getMatches.getData("getAllMatches.php").toString();
+		String jsonArrayString = getMatches.doInBackground("getAllMatches.php").toString();
 		//parse the JSON data that returns information needed
 		try
 		{

@@ -4,10 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -84,8 +82,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	//text views to hold the team names
 	TextView homeTeam1;
 	TextView awayTeam1;
-	
-	int counter;
+
+	int countPassesToScore;
 	
 	JSONObject createMatch = new JSONObject();
 	
@@ -94,6 +92,9 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	TextView awayPoints;
 	TextView homeGoals;
 	TextView awayGoals;
+	TextView time;
+	
+	Button endMatch;
 	
 	String fixtureResult;
 	
@@ -104,6 +105,10 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	//make boolean for home and away team stats
 	Boolean homeTeamStats;
 	Boolean awayTeamStats;
+	
+	//initialize handpass variables
+	int homehandPasses = 0;
+	int awayhandPasses = 0;
 	
 	//boolean values for if the home team and away team are attacking of not
 	Boolean homeAttack;
@@ -163,6 +168,9 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	int redBCards;
 	int blackBCards;
 	
+	//is match over?
+	Boolean isOver = false;
+	
 	/*
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -185,6 +193,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		teamBPoints = 0;
 		teamAGoals = 0;
 		teamBGoals = 0;
+		countPassesToScore = 0;
 		
 		homeAttack = false;
 		awayAttack = false;
@@ -209,6 +218,10 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		homeGoals = (TextView) findViewById(R.id.textView2);
 		awayGoals = (TextView) findViewById(R.id.textView1);
 		
+		//set the time to be displayed
+		time = (TextView) findViewById(R.id.time);
+		endMatch = (Button) findViewById(R.id.endmatch);
+		
 		//text views for points
 		sm = (SensorManager) getSystemService(SENSOR_SERVICE);
 		accelerate = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -232,6 +245,18 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		
 		//call to the method
 		createMatch();
+		
+		endMatch.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) 
+			{
+				// TODO Auto-generated method stub
+				isOver = true;	
+				sendData(minutes);
+				
+			}
+		});
 		
 		// change the image
 		// button functionality
@@ -271,7 +296,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	{
 		public void run() 
 		{
-
 			//milliseconds calculation
 			timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
 
@@ -283,6 +307,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			
 			minutes = mins;
 			
+			time.setText(mins + "'");
+			
 			if(secs == 45)
 			{
 				sendTrue = false;
@@ -293,8 +319,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				sendData(mins);
 				sendTrue = true;
 			}
-
-
 			customHandler.postDelayed(this, 0);	
 		}
 
@@ -360,9 +384,13 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	{
 		if(velocityX > 0 && velocityY > 0)
 		{
-			if(update == false)
+			if(update == false || isOver == true)
 			{
-				
+				//cannot update if match is over
+				if(isOver == true)
+				{
+					Toast.makeText(UpdateMatchStats.this, "Match is already over", Toast.LENGTH_SHORT).show();
+				}
 			}
 			else
 			{
@@ -394,8 +422,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 					teamAPoints++;
 					homePoints.setText(" " + teamAPoints);
 					
-					
-					//away team gets posession because home team just scored.
+					//reset variables
 					homeAttack = false;
 					awayTeamStats = false;
 					homeTeamStats = false;
@@ -407,6 +434,13 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 					boolean point = true;
 					boolean goal = false;
 					
+					//reset the score pass counter to be 0
+					countPassesToScore = 0;
+					//reset the swipe counters for both left and right sides
+					countRightSwipes = 0;
+					countLeftSwipes = 0;
+					
+					//send this data to the dialog so an event can be created
 					createDialog(homeTeam,point,goal);
 					
 				}
@@ -414,9 +448,13 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		}
 		else if(velocityX < 0 && velocityY < 0)
 		{
-			if(update == false)
+			if(update == false || isOver == true)
 			{
-				
+				//cannot update if match is over
+				if(isOver == true)
+				{
+					Toast.makeText(UpdateMatchStats.this, "Match is already over", Toast.LENGTH_SHORT).show();
+				}
 			}
 			else
 			{
@@ -452,17 +490,24 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 					teamBPoints++;
 					awayPoints.setText(" " + teamBPoints);
 					
-					
+					//reset variables
 					homeAttack = false;
 					awayTeamStats = false;
 					homeTeamStats = false;
-					
 					
 					swipeUpdate.setText("Goal kick to " + homeTeam);
 
 					boolean point = true;
 					boolean goal = false;
 					
+					//reset the score pass counter to be 0
+					countPassesToScore = 0;
+					
+					//reset the swipe counters for both left and right sides
+					countRightSwipes = 0;
+					countLeftSwipes = 0;
+					
+					//send this data to the dialog so an event can be created
 					createDialog(awayTeam,point,goal);
 				}	
 			}
@@ -499,6 +544,10 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				boolean point = false;
 				boolean goal = true;
 				
+				//reset the score pass counter to be 0
+				countPassesToScore = 0;
+				
+				//send this data to the dialog so an event can be created
 				createDialog(awayTeam,point,goal);
 			}
 
@@ -518,6 +567,10 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				boolean point = false;
 				boolean goal = true;
 				
+				//reset the score pass counter to be 0
+				countPassesToScore = 0;
+				
+				//send this data to the dialog so an event can be created
 				createDialog(awayTeam,point,goal);
 			}
 		}
@@ -526,10 +579,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	@Override
 	public void onShowPress(MotionEvent event) {
 	}
-	
-	//initialize handpass variables
-	int homehandPasses = 0;
-	int awayhandPasses = 0;
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent event) 
@@ -544,12 +593,18 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			//count the handpasses for each team
 			if(homeTeamStats == true)
 			{
+				//count all passes for home team
 				homehandPasses++;
+				//count the passes it takes to score
+				countPassesToScore++;
 			}
 			
 			if(awayTeamStats == true)
 			{
-				awayhandPasses++;		
+				//count all passes for away team
+				awayhandPasses++;	
+				//count the passes it takes to score
+				countPassesToScore++;
 			}		
 		};
 		return true;
@@ -584,134 +639,62 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	//gets the fixture data from the database
 	public void createMatch() 
 	{
-		
-		JSONArray json = new JSONArray();
 		try 
 		{
 			createMatch.put("FixtureID", fixture_id);
 			createMatch.put("MatchID", matchID);
-
-			json.put(0, createMatch);
-		} 
-		catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		HttpClient client = new DefaultHttpClient();
-		HttpResponse response;
-		
-		try 
-		{
-			HttpPost post = new HttpPost("http://ciaranmcmanus.server2.eu/insertInto.php");
-			List<NameValuePair> nVP = new ArrayList<NameValuePair>(2);
-			
-			nVP.add(new BasicNameValuePair("json", json.toString()));
-
-
-			post.setEntity(new UrlEncodedFormEntity(nVP));
-			response = client.execute(post);
-			
-			if (response != null) 
-			{
-				
-				InputStream in = response.getEntity().getContent();
-
-				BufferedReader reader = new BufferedReader(new InputStreamReader(in, "iso-8859-1"), 8);
-				StringBuilder sb = new StringBuilder();
-				String line = null;
-				while ((line = reader.readLine()) != null) 
-				{
-					sb.append(line + "\n");
-				}
-				
-				in.close();
-				
-				created = sb.toString();
-				
-				Toast.makeText(UpdateMatchStats.this, created, Toast.LENGTH_SHORT).show();
-			}
-
-		} 
-		catch (Exception e) 
-		{
-			Log.e("log tag", "Error in Http connection" + e.toString());
-		}
-	}
-	
-	public void sendData(int mins)
-	{
-		//create the json object that is going to update the database with its contents
-		JSONObject obj = new JSONObject();
-		try 
-		{
-			obj.put("FixtureID", fixture_id);
-			obj.put("MatchID", matchID);
-			obj.put("teamAPoints", teamAPoints);
-			obj.put("teamBPoints", teamBPoints);
-			obj.put("teamAGoals", teamAGoals);
-			obj.put("teamBGoals", teamBGoals);
-			obj.put("homehandPasses", homehandPasses);
-			obj.put("awayhandPasses", awayhandPasses);
-			obj.put("matchMins", mins);
 		} 
 		catch (JSONException e1) 
 		{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
-		JSONArray json = new JSONArray();
-
-		try 
-		{
-			json.put(0, obj);
-		} 
-		catch (JSONException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		HttpClient client = new DefaultHttpClient();
-		HttpResponse response;
 		
-		try 
+		GetAndPostDataToServer sendMatchData = new GetAndPostDataToServer();
+		
+		String note = sendMatchData.doInBackground(createMatch, "insertInto.php").toString();
+		
+		Toast.makeText(UpdateMatchStats.this, note, Toast.LENGTH_SHORT).show();
+	}
+	
+	public void sendData(int mins)
+	{
+		if(isOver == false)
 		{
-			HttpPost post = new HttpPost("http://ciaranmcmanus.server2.eu/updateMatches.php");
-			List<NameValuePair> nVP = new ArrayList<NameValuePair>(2);
-			
-			nVP.add(new BasicNameValuePair("json", json.toString()));
-
-
-			post.setEntity(new UrlEncodedFormEntity(nVP));
-			response = client.execute(post);
-			
-			if (response != null) 
+			//create the json object that is going to update the database with its contents
+			JSONObject obj = new JSONObject();
+			try 
 			{
-				
-				InputStream in = response.getEntity().getContent();
-
-				BufferedReader reader = new BufferedReader(new InputStreamReader(in, "iso-8859-1"), 8);
-				StringBuilder sb = new StringBuilder();
-				String line = null;
-				while ((line = reader.readLine()) != null) 
-				{
-					sb.append(line + "\n");
-				}
-				in.close();
-
-				String fixtureResult2 = sb.toString();	
-				
-				Toast.makeText(UpdateMatchStats.this, fixtureResult2, Toast.LENGTH_SHORT).show();
-
+				obj.put("FixtureID", fixture_id);
+				obj.put("MatchID", matchID);
+				obj.put("teamAPoints", teamAPoints);
+				obj.put("teamBPoints", teamBPoints);
+				obj.put("teamAGoals", teamAGoals);
+				obj.put("teamBGoals", teamBGoals);
+				obj.put("homehandPasses", homehandPasses);
+				obj.put("awayhandPasses", awayhandPasses);
+				obj.put("matchMins", mins);
+				obj.put("matchOver", isOver);
+			} 
+			catch (JSONException e1) 
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 
-		} catch (Exception e) 
-		{
-			Log.e("log tag", "Error in Http connection" + e.toString());
+			GetAndPostDataToServer sendMatchData = new GetAndPostDataToServer();
+			
+			String note = sendMatchData.doInBackground(obj, "updateMatches.php").toString();
+			
+			Toast.makeText(UpdateMatchStats.this, note, Toast.LENGTH_SHORT).show();
+			
 		}
-
+		else
+		{
+			//let user know that the match is over
+			Toast.makeText(UpdateMatchStats.this, "Match is now over", Toast.LENGTH_SHORT).show();
+		}
 	}
 	
 	public void takePhoto()
@@ -760,11 +743,11 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		float xVal = 8.0f;
 		float yVal = 8.0f;
 		
-		if(event.values[0] > xVal && event.values[1] > yVal && counter == 0)
-		{
-			counter++;
+		//if(event.values[0] > xVal && event.values[1] > yVal && counter == 0)
+		//{
+			//counter++;
 			//takePhoto();
-		}
+		//}
 		
 		
 	}
@@ -800,13 +783,27 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				
 				try 
 				{
-					JSONObject json = jArray.getJSONObject(getPlayer);
-					String player_id = json.getString("player_id");
+					if(homeTeamStats == true)
+					{
+						JSONObject json = jArray.getJSONObject(getPlayer);
+						String player_id = json.getString("player_id");
+						
+						//call to the class that creates an event
+						GetAndPostDataToServer create = new GetAndPostDataToServer(fixture_id,player_id,point,goal,minutes,homeTeam);
+						//method to insert into the database
+						create.doInBackground();
+					}
+					else
+					{
+						JSONObject json = jArray.getJSONObject(getPlayer);
+						String player_id = json.getString("player_id");
+						
+						//call to the class that creates an event
+						GetAndPostDataToServer create = new GetAndPostDataToServer(fixture_id,player_id,point,goal,minutes,awayTeam);
+						//method to insert into the database
+						create.doInBackground();
+					}
 					
-					//call to the class that creates an event
-					GetAndPostDataToServer create = new GetAndPostDataToServer(fixture_id,player_id,point,goal,minutes);
-					//method to insert into the database
-					create.createEvent();
 					
 				} 
 				catch (JSONException e) 
@@ -830,15 +827,18 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			}
 		});
 		
+		//create a dialog box
 		AlertDialog dialogCreate = dialogBuilder.create();
 		dialogCreate.show();
 		
+		//create a new spinner to hold the players information
 		Spinner spin1 = (Spinner)v.findViewById(R.id.spinner);
 		
 		String fixtureResult = "";
 		
 		InputStream input = null;
 		
+		//send the team name to the php script
 		try
 		{
 			HttpClient httpclient = new DefaultHttpClient();
@@ -885,7 +885,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 
 				// get the specific object in the JSON
 				JSONObject json = jArray.getJSONObject(i);
-				player = json.getString("player_name");
+				player = json.getString("player_pos");
 
 				list1.add(player);	
 			}
