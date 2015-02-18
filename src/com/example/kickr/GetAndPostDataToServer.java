@@ -1,8 +1,10 @@
 package com.example.kickr;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,8 +24,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ActionBar.LayoutParams;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -48,6 +53,25 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 	String url;
 	
 	boolean isMatchOver = false;
+	
+	public static boolean hasActiveInternetConnection() 
+	{
+		try 
+		{
+			HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
+			urlc.setRequestProperty("User-Agent", "Test");
+			urlc.setRequestProperty("Connection", "close");
+			urlc.setConnectTimeout(1500);
+			urlc.connect();
+			return (urlc.getResponseCode() == 200);
+		} 
+		catch (IOException e) 
+		{
+			Log.e("Error checking internet connection", e.toString());
+		}
+
+	    return false;
+	}
 	
 	public GetAndPostDataToServer(String matchID, String playerID, boolean point, boolean goal,int mins,String teamName) 
 	{
@@ -141,7 +165,6 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 				in.close();
 				
 				String note = sb.toString();
-				
 				return note;
 			}
 
@@ -252,6 +275,7 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 	
 	public String getTeamStats(String teamName)
 	{
+		
 		try {
 
 			String link = "http://ciaranmcmanus.server2.eu/getTeamStats.php?teamName="
@@ -295,19 +319,43 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 	protected String doInBackground(String params) 
 	{
 		// TODO Auto-generated method stub
-		return getData(params).toString();
+		if(hasActiveInternetConnection())
+		{
+			return getData(params).toString();
+		}
+		else
+		{
+			return "No Connection";
+		}
+		
 	}
 	
 	protected String doInBackground(JSONObject params,String php) 
 	{
-		// TODO Auto-generated method stub
-		String json = sendJson(params,php).toString();
-		return json;
+		if (hasActiveInternetConnection()) 
+		{
+			// TODO Auto-generated method stub
+			String json = sendJson(params, php).toString();
+			return json;
+		} 
+		else 
+		{
+			return "No Connection";
+		}
 	}
 
 	@Override
-	protected String doInBackground(Void... params) {
-		// TODO Auto-generated method stub
-		return createEvent().toString();
+	protected String doInBackground(Void... params) 
+	{
+		if(hasActiveInternetConnection())
+		{
+			// TODO Auto-generated method stub
+			return createEvent().toString();
+		} 
+		else 
+		{
+			return "No Connection";
+		}
+		
 	}
 }

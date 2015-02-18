@@ -85,6 +85,11 @@ public class Fixtures extends Base_Activity
 		GetAndPostDataToServer getFixtures = new GetAndPostDataToServer();
 		
 		String jsonArrayString = getFixtures.doInBackground("getAllFixtures.php").toString();
+		
+		if(jsonArrayString.equals("No Connection"))
+		{
+			Toast.makeText(Fixtures.this, "No Connection, refresh", Toast.LENGTH_SHORT).show();
+		}
 		//parse the JSON data that returns information needed
 		try
 		{

@@ -55,6 +55,14 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	private static int TAKE_PICTURE = 1;
 	private Uri imageUri;
 	
+	//booleans for goal,point,wide
+	boolean point;
+	boolean goal;
+	boolean wide;
+	//boolean for if a player was selected of not
+	boolean selectedAPlayer;
+	boolean didNotSelect;
+	
 	Boolean sendTrue = false;
 	int matchID;
 	
@@ -417,6 +425,9 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				
 				if(countRightSwipes == 3)
 				{
+					//send this data to the dialog so an event can be created
+					createAcceptDialogBox(homeTeam,true,false);
+					
 					pitch1.setImageResource(R.drawable.away_goal_kick);
 					swipeUpdate.setText(homeTeam + " scored");
 					teamAPoints++;
@@ -430,18 +441,11 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 					
 					swipeUpdate.setText("Goal kick to " + awayTeam);
 					
-					//create an event 
-					boolean point = true;
-					boolean goal = false;
-					
 					//reset the score pass counter to be 0
 					countPassesToScore = 0;
 					//reset the swipe counters for both left and right sides
 					countRightSwipes = 0;
 					countLeftSwipes = 0;
-					
-					//send this data to the dialog so an event can be created
-					createDialog(homeTeam,point,goal);
 					
 				}
 			}
@@ -485,6 +489,9 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				
 				if(countLeftSwipes == 3)
 				{
+					//send this data to the dialog so an event can be created
+					createAcceptDialogBox(awayTeam,true,false);
+					
 					pitch1.setImageResource(R.drawable.home_goal_kick);
 					swipeUpdate.setText(awayTeam + " scored");
 					teamBPoints++;
@@ -496,9 +503,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 					homeTeamStats = false;
 					
 					swipeUpdate.setText("Goal kick to " + homeTeam);
-
-					boolean point = true;
-					boolean goal = false;
 					
 					//reset the score pass counter to be 0
 					countPassesToScore = 0;
@@ -506,9 +510,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 					//reset the swipe counters for both left and right sides
 					countRightSwipes = 0;
 					countLeftSwipes = 0;
-					
-					//send this data to the dialog so an event can be created
-					createDialog(awayTeam,point,goal);
 				}	
 			}
 		}
@@ -548,7 +549,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				countPassesToScore = 0;
 				
 				//send this data to the dialog so an event can be created
-				createDialog(awayTeam,point,goal);
+				createAcceptDialogBox(awayTeam,point,goal);
 			}
 
 			if (awayAttack == true) 
@@ -571,7 +572,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				countPassesToScore = 0;
 				
 				//send this data to the dialog so an event can be created
-				createDialog(awayTeam,point,goal);
+				createAcceptDialogBox(awayTeam,point,goal);
 			}
 		}
 	}
@@ -758,12 +759,12 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		
 	}
 		
-	
+
 	@SuppressLint("NewApi")
-	private void createDialog(String teamName,final Boolean point,final Boolean goal)
+	private boolean createAcceptDialogBox(String teamName,final Boolean point,final Boolean goal)
 	{
 		
-		final ArrayList<String> list1 = new ArrayList<String>();
+		final ArrayList<String> selectPlayersList = new ArrayList<String>();
 		
 		//create the alert dialog
 		dialogBuilder = new AlertDialog.Builder(this);
@@ -779,7 +780,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			@Override
 			public void onClick(DialogInterface dialog, int which) 
 			{
-				// TODO Auto-generated method stub
 				
 				try 
 				{
@@ -790,7 +790,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 						
 						//call to the class that creates an event
 						GetAndPostDataToServer create = new GetAndPostDataToServer(fixture_id,player_id,point,goal,minutes,homeTeam);
-						//method to insert into the database
+						
 						create.doInBackground();
 					}
 					else
@@ -803,7 +803,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 						//method to insert into the database
 						create.doInBackground();
 					}
-					
 					
 				} 
 				catch (JSONException e) 
@@ -823,7 +822,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			{
 				// TODO Auto-generated method stub
 				Toast.makeText(UpdateMatchStats.this, "You cancelled player selection", Toast.LENGTH_SHORT).show();
-				
 			}
 		});
 		
@@ -872,7 +870,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		}
 		
 		String player;
-		JSONArray players = new JSONArray();
 		
 		//parse the JSON data that returns information needed
 		try 
@@ -887,7 +884,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				JSONObject json = jArray.getJSONObject(i);
 				player = json.getString("player_pos");
 
-				list1.add(player);	
+				selectPlayersList.add(player);	
 			}
 			
 		} 
@@ -897,7 +894,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		}
 		
 		//create the string adapter to hold the list of names coming from the database
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list1);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, selectPlayersList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		
 		spin1.setAdapter(adapter);
@@ -918,6 +915,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				
 			}
 		});
+		
+		return false;
 		
 	}
 }
