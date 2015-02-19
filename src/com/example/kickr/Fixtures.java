@@ -86,86 +86,90 @@ public class Fixtures extends Base_Activity
 		
 		String jsonArrayString = getFixtures.doInBackground("getAllFixtures.php").toString();
 		
+		Log.e("String",jsonArrayString);
+		
 		if(jsonArrayString.equals("No Connection"))
 		{
 			Toast.makeText(Fixtures.this, "No Connection, refresh", Toast.LENGTH_SHORT).show();
 		}
-		//parse the JSON data that returns information needed
-		try
+		else
 		{
-			String s = "";
-			jArray = new JSONArray(jsonArrayString);
-			
-			//loop through the array
-			for(int i=0; i<jArray.length(); i++)
+			//parse the JSON data that returns information needed
+			try
 			{
+				String s = "";
+				jArray = new JSONArray(jsonArrayString);
 				
-				//get the specific object in the JSON
-				JSONObject json = jArray.getJSONObject(i);
-				home = json.getString("teamA");
-				away = json.getString("teamB");
-				
-				// set up the dynamic buttons
-				Button btn = new Button(this);
-				btn.setLayoutParams((new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT)));
-				btn.setId(i);
-				btn.setMaxLines(1);
-				btn.setText(home + " vs. " + away);
-				btn.setBackgroundColor(Color.TRANSPARENT);
-				il.addView(btn);
-				
-				//add a divider to show the buttons
-				TextView divider = new TextView(this);
-				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-				divider.setLayoutParams(lp);
-				divider.setBackgroundColor(Color.parseColor("#B2C5D1"));
-				il.addView(divider);
-				
+				//loop through the array
+				for(int i=0; i<jArray.length(); i++)
+				{
+					
+					//get the specific object in the JSON
+					JSONObject json = jArray.getJSONObject(i);
+					home = json.getString("teamA");
+					away = json.getString("teamB");
+					
+					// set up the dynamic buttons
+					Button btn = new Button(this);
+					btn.setLayoutParams((new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT)));
+					btn.setId(i);
+					btn.setMaxLines(1);
+					btn.setText(home + " vs. " + away);
+					btn.setBackgroundColor(Color.TRANSPARENT);
+					il.addView(btn);
+					
+					//add a divider to show the buttons
+					TextView divider = new TextView(this);
+					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+					divider.setLayoutParams(lp);
+					divider.setBackgroundColor(Color.parseColor("#B2C5D1"));
+					il.addView(divider);
+					
 
-				btn.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) 
-					{
-						//need to pass the match information to the fixture information screen
-						try 
+					btn.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) 
 						{
-							//get all the information needed to be sent to the next acitivity
-							JSONObject json = jArray.getJSONObject(v.getId());
-							String fixture = (String)json.get("fix_id");
-							String home = (String)json.get("teamA");
-							String referee = (String)json.get("referee");
-							String dateTime = (String)json.get("date");
-							String venue = (String)json.get("venue");
-							String away = (String)json.get("teamB");
-							String comp = (String)json.get("competition");
+							//need to pass the match information to the fixture information screen
+							try 
+							{
+								//get all the information needed to be sent to the next acitivity
+								JSONObject json = jArray.getJSONObject(v.getId());
+								String fixture = (String)json.get("fix_id");
+								String home = (String)json.get("teamA");
+								String referee = (String)json.get("referee");
+								String dateTime = (String)json.get("date");
+								String venue = (String)json.get("venue");
+								String away = (String)json.get("teamB");
+								String comp = (String)json.get("competition");
+								
+								//pass the match id to the fixture information
+								Intent i = new Intent(getApplicationContext(), FixtureInfoActivity.class);
+								i.putExtra("FixtureID", fixture);
+								i.putExtra("Home",home);
+								i.putExtra("Away",away);
+								i.putExtra("Referee",referee);
+								i.putExtra("Competition",comp);
+								i.putExtra("Venue",venue);
+								i.putExtra("Date and Time", dateTime);
+								//start activity and pass in the bundle of information
+								startActivity(i);
+							} 
+							catch (JSONException e) 
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 							
-							//pass the match id to the fixture information
-							Intent i = new Intent(getApplicationContext(), FixtureInfoActivity.class);
-							i.putExtra("FixtureID", fixture);
-							i.putExtra("Home",home);
-							i.putExtra("Away",away);
-							i.putExtra("Referee",referee);
-							i.putExtra("Competition",comp);
-							i.putExtra("Venue",venue);
-							i.putExtra("Date and Time", dateTime);
-							//start activity and pass in the bundle of information
-							startActivity(i);
-						} 
-						catch (JSONException e) 
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
 						}
-						
-					}
-				});
-				
+					});
+				}
 			}
-		}
-		catch(Exception e)
-		{
-			//handle the exception
-			Log.e("Log tag", "Error parsing data " + e.toString());
+			catch(Exception e)
+			{
+				//handle the exception
+				Log.e("Log tag", "Error parsing data " + e.toString());
+			}
 		}
 	}
 	

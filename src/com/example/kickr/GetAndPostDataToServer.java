@@ -44,7 +44,6 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 	String team;
 	
 	int match;
-	int player;
 	
 	boolean p;
 	boolean g;
@@ -61,7 +60,7 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 			HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
 			urlc.setRequestProperty("User-Agent", "Test");
 			urlc.setRequestProperty("Connection", "close");
-			urlc.setConnectTimeout(1500);
+			urlc.setConnectTimeout(5000);
 			urlc.connect();
 			return (urlc.getResponseCode() == 200);
 		} 
@@ -73,11 +72,10 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 	    return false;
 	}
 	
-	public GetAndPostDataToServer(String matchID, String playerID, boolean point, boolean goal,int mins,String teamName) 
+	public GetAndPostDataToServer(String matchID, boolean point, boolean goal,int mins,String teamName) 
 	{
 		// TODO Auto-generated constructor stub
 		match = Integer.parseInt(matchID);
-		player = Integer.parseInt(playerID);
 		p = point;
 		g = goal;
 		minute = mins;
@@ -85,11 +83,10 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 		
 	}
 	
-	public GetAndPostDataToServer(String matchID, String playerID, boolean point, boolean goal,int mins,boolean isOver) 
+	public GetAndPostDataToServer(String matchID, boolean point, boolean goal,int mins,boolean isOver) 
 	{
 		// TODO Auto-generated constructor stub
 		match = Integer.parseInt(matchID);
-		player = Integer.parseInt(playerID);
 		p = point;
 		g = goal;
 		minute = mins;
@@ -114,7 +111,6 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 		try 
 		{
 			obj.put("MatchID", match);
-			obj.put("PlayerID", player);
 			obj.put("Point", p);
 			obj.put("Goal", g);
 			obj.put("Minutes", minute);

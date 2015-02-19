@@ -56,9 +56,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	private Uri imageUri;
 	
 	//booleans for goal,point,wide
-	boolean point;
-	boolean goal;
-	boolean wide;
+
+	
 	//boolean for if a player was selected of not
 	boolean selectedAPlayer;
 	boolean didNotSelect;
@@ -70,7 +69,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	boolean update = false;
 	
 	//create variables to be used in order to get the chosen player by name
-	int getPlayer;
+	int getEvent;
 	JSONArray jArray;
 	
 	String created;
@@ -168,6 +167,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	int yellowACards;
 	int redACards;
 	int blackACards;
+	int teamAWides;
+	int teamBWides;
 	
 	//away team
 	int teamBPoints;
@@ -201,6 +202,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		teamBPoints = 0;
 		teamAGoals = 0;
 		teamBGoals = 0;
+		teamAWides = 0;
+		teamBWides = 0;
 		countPassesToScore = 0;
 		
 		homeAttack = false;
@@ -426,26 +429,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				if(countRightSwipes == 3)
 				{
 					//send this data to the dialog so an event can be created
-					createAcceptDialogBox(homeTeam,true,false);
-					
-					pitch1.setImageResource(R.drawable.away_goal_kick);
-					swipeUpdate.setText(homeTeam + " scored");
-					teamAPoints++;
-					homePoints.setText(" " + teamAPoints);
-					
-					//reset variables
-					homeAttack = false;
-					awayTeamStats = false;
-					homeTeamStats = false;
-					
-					
-					swipeUpdate.setText("Goal kick to " + awayTeam);
-					
-					//reset the score pass counter to be 0
-					countPassesToScore = 0;
-					//reset the swipe counters for both left and right sides
-					countRightSwipes = 0;
-					countLeftSwipes = 0;
+					createAcceptDialogBox(homeTeam);
 					
 				}
 			}
@@ -490,26 +474,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				if(countLeftSwipes == 3)
 				{
 					//send this data to the dialog so an event can be created
-					createAcceptDialogBox(awayTeam,true,false);
-					
-					pitch1.setImageResource(R.drawable.home_goal_kick);
-					swipeUpdate.setText(awayTeam + " scored");
-					teamBPoints++;
-					awayPoints.setText(" " + teamBPoints);
-					
-					//reset variables
-					homeAttack = false;
-					awayTeamStats = false;
-					homeTeamStats = false;
-					
-					swipeUpdate.setText("Goal kick to " + homeTeam);
-					
-					//reset the score pass counter to be 0
-					countPassesToScore = 0;
-					
-					//reset the swipe counters for both left and right sides
-					countRightSwipes = 0;
-					countLeftSwipes = 0;
+					createAcceptDialogBox(awayTeam);
 				}	
 			}
 		}
@@ -530,49 +495,15 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			//update home and away goals where the condition is true
 			if (homeAttack == true) 
 			{
-				teamAGoals++;
-				pitch1.setImageResource(R.drawable.away_goal_kick);
-				swipeUpdate.setText(homeTeam + " goal scored");		
-				
-				homeGoals.setText("" + teamAGoals);
-				
-				//reset swipe count to be 0
-				countRightSwipes = 0;
-				homeAttack = false;
-				awayTeamStats = false;
-				homeTeamStats = false;
-				
-				boolean point = false;
-				boolean goal = true;
-				
-				//reset the score pass counter to be 0
-				countPassesToScore = 0;
-				
 				//send this data to the dialog so an event can be created
-				createAcceptDialogBox(awayTeam,point,goal);
+				createAcceptDialogBox(homeTeam);
 			}
 
 			if (awayAttack == true) 
 			{
-				teamBGoals++;
-				pitch1.setImageResource(R.drawable.home_goal_kick);
-				swipeUpdate.setText(awayTeam + " goal scored");
-				awayGoals.setText("" + teamBGoals);
-				
-				//reset swipe count to be 0
-				countLeftSwipes = 0;
-				awayAttack = false;
-				awayTeamStats = false;
-				homeTeamStats = false;
-				
-				boolean point = false;
-				boolean goal = true;
-				
-				//reset the score pass counter to be 0
-				countPassesToScore = 0;
-				
 				//send this data to the dialog so an event can be created
-				createAcceptDialogBox(awayTeam,point,goal);
+				createAcceptDialogBox(awayTeam);
+				
 			}
 		}
 	}
@@ -651,7 +582,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			e1.printStackTrace();
 		}
 		
-		
 		GetAndPostDataToServer sendMatchData = new GetAndPostDataToServer();
 		
 		String note = sendMatchData.doInBackground(createMatch, "insertInto.php").toString();
@@ -661,7 +591,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	
 	public void sendData(int mins)
 	{
-		if(isOver == false)
+		if(isOver == true)
 		{
 			//create the json object that is going to update the database with its contents
 			JSONObject obj = new JSONObject();
@@ -676,7 +606,9 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				obj.put("homehandPasses", homehandPasses);
 				obj.put("awayhandPasses", awayhandPasses);
 				obj.put("matchMins", mins);
-				obj.put("matchOver", isOver);
+				obj.put("isOver", isOver);
+				obj.put("teamAWides", teamAWides);
+				obj.put("teamBWides", teamBWides);
 			} 
 			catch (JSONException e1) 
 			{
@@ -761,10 +693,15 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		
 
 	@SuppressLint("NewApi")
-	private boolean createAcceptDialogBox(String teamName,final Boolean point,final Boolean goal)
+	private boolean createAcceptDialogBox(String teamName)
 	{
 		
-		final ArrayList<String> selectPlayersList = new ArrayList<String>();
+		final ArrayList<String> selectEventList = new ArrayList<String>();
+		
+		selectEventList.add("Point");
+		selectEventList.add("Wide");
+		selectEventList.add("Goal");
+		
 		
 		//create the alert dialog
 		dialogBuilder = new AlertDialog.Builder(this);
@@ -773,43 +710,144 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		//create the view for the layout
 		View v = inflater.inflate(R.layout.spinner_layout, null);
 		//set title, add the view to the alert, set the positive button to have ok and cancel.
-		dialogBuilder.setTitle("Select a player");
+		dialogBuilder.setTitle("Select Event");
 		dialogBuilder.setView(v);
 		dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() 
 		{
 			@Override
 			public void onClick(DialogInterface dialog, int which) 
 			{
-				
-				try 
-				{
-					if(homeTeamStats == true)
-					{
-						JSONObject json = jArray.getJSONObject(getPlayer);
-						String player_id = json.getString("player_id");
-						
-						//call to the class that creates an event
-						GetAndPostDataToServer create = new GetAndPostDataToServer(fixture_id,player_id,point,goal,minutes,homeTeam);
-						
-						create.doInBackground();
-					}
-					else
-					{
-						JSONObject json = jArray.getJSONObject(getPlayer);
-						String player_id = json.getString("player_id");
-						
-						//call to the class that creates an event
-						GetAndPostDataToServer create = new GetAndPostDataToServer(fixture_id,player_id,point,goal,minutes,awayTeam);
-						//method to insert into the database
-						create.doInBackground();
-					}
-					
-				} 
-				catch (JSONException e) 
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+						if (homeTeamStats == true) 
+						{
+							//switch statement based off of what the user selected
+							switch(getEvent)
+							{
+							case 0:
+								teamAPoints++;
+								Log.e("GotHere","Home " + teamAPoints);
+								pitch1.setImageResource(R.drawable.away_goal_kick);
+								swipeUpdate.setText(homeTeam + " scored");
+								homePoints.setText(" " + teamAPoints);
+								
+								//reset variables
+								homeAttack = false;
+								awayTeamStats = false;
+								homeTeamStats = false;
+								
+								swipeUpdate.setText("Goal kick to " + awayTeam);
+								
+								//reset the score pass counter to be 0
+								countPassesToScore = 0;
+								
+								//reset the swipe counters for both left and right sides
+								countRightSwipes = 0;
+								countLeftSwipes = 0;
+								
+								Boolean point = true;
+								Boolean goal = false;
+								
+								GetAndPostDataToServer create = new GetAndPostDataToServer(fixture_id, point, goal, minutes, homeTeam);
+
+								String success = create.doInBackground();
+								
+								Toast.makeText(UpdateMatchStats.this, success, Toast.LENGTH_SHORT).show();
+							case 1:
+								teamAWides++;
+								break;
+							case 2:
+								teamAGoals++;
+								pitch1.setImageResource(R.drawable.away_goal_kick);
+								swipeUpdate.setText(homeTeam + " goal scored");		
+								
+								homeGoals.setText("" + teamAGoals);
+								
+								//reset swipe count to be 0
+								countRightSwipes = 0;
+								homeAttack = false;
+								awayTeamStats = false;
+								homeTeamStats = false;
+								
+								point = false;
+								goal = true;
+								
+								//reset the score pass counter to be 0
+								countPassesToScore = 0;
+								
+								create = new GetAndPostDataToServer(fixture_id, point, goal, minutes, homeTeam);
+
+								success = create.doInBackground().toString();
+								
+								Toast.makeText(UpdateMatchStats.this, success, Toast.LENGTH_SHORT).show();
+							default:
+								break;
+								
+							}
+						} 
+						else 
+						{
+							switch(getEvent)
+							{
+							case 0:
+								teamBPoints++;
+								Log.e("GotHere","Away" + teamBPoints);
+								pitch1.setImageResource(R.drawable.home_goal_kick);
+								swipeUpdate.setText(awayTeam + " scored");
+								awayPoints.setText(" " + teamBPoints);
+								
+								//reset variables
+								homeAttack = false;
+								awayTeamStats = false;
+								homeTeamStats = false;
+								
+								swipeUpdate.setText("Goal kick to " + homeTeam);
+								
+								//reset the score pass counter to be 0
+								countPassesToScore = 0;
+								//reset the swipe counters for both left and right sides
+								countRightSwipes = 0;
+								countLeftSwipes = 0;
+								
+								Boolean point = true;
+								Boolean goal = false;
+								
+								GetAndPostDataToServer create = new GetAndPostDataToServer(fixture_id, point, goal, minutes, awayTeam);
+
+								String success = create.doInBackground();
+								
+								Toast.makeText(UpdateMatchStats.this, success, Toast.LENGTH_SHORT).show();
+								break;
+							case 1:
+								teamBWides++;
+								break;
+							case 2:
+								teamBGoals++;
+
+								pitch1.setImageResource(R.drawable.home_goal_kick);
+								swipeUpdate.setText(awayTeam + " goal scored");
+								awayGoals.setText("" + teamBGoals);
+								
+								//reset swipe count to be 0
+								countLeftSwipes = 0;
+								awayAttack = false;
+								awayTeamStats = false;
+								homeTeamStats = false;
+
+								//reset the score pass counter to be 0
+								countPassesToScore = 0;
+								point = false;
+								goal = true;
+								
+								create = new GetAndPostDataToServer(fixture_id, point, goal, minutes, awayTeam);
+
+								success = create.doInBackground();
+								
+								Toast.makeText(UpdateMatchStats.this, success, Toast.LENGTH_SHORT).show();
+								break;
+							default:
+								break;
+								
+							}
+						}
 			}
 			
 		});
@@ -832,69 +870,9 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		//create a new spinner to hold the players information
 		Spinner spin1 = (Spinner)v.findViewById(R.id.spinner);
 		
-		String fixtureResult = "";
-		
-		InputStream input = null;
-		
-		//send the team name to the php script
-		try
-		{
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost("http://ciaranmcmanus.server2.eu/getAllPlayers.php?team_name=" + teamName);
-			HttpResponse response = httpclient.execute(httppost);
-			HttpEntity entity = response.getEntity();
-			input = entity.getContent();
-			
-		}
-		catch(Exception e)
-		{
-			Log.e("log tag","Error in Http connection" + e.toString());
-		}
-		//convert response to string
-		try
-		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(input,"iso-8859-1"),8);
-			StringBuilder sb = new StringBuilder();
-			String line = null;
-			while((line = reader.readLine()) != null)
-			{
-				sb.append(line + "\n");
-			}
-			input.close();
-			
-			fixtureResult = sb.toString();
-		}
-		catch(Exception e)
-		{
-			Log.e("log tag","Error converting result" + e.toString());
-		}
-		
-		String player;
-		
-		//parse the JSON data that returns information needed
-		try 
-		{
-			jArray = new JSONArray(fixtureResult);
-
-			// loop through the array
-			for (int i = 0; i < jArray.length(); i++) 
-			{
-
-				// get the specific object in the JSON
-				JSONObject json = jArray.getJSONObject(i);
-				player = json.getString("player_pos");
-
-				selectPlayersList.add(player);	
-			}
-			
-		} 
-		catch (JSONException e) 
-		{
-
-		}
 		
 		//create the string adapter to hold the list of names coming from the database
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, selectPlayersList);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, selectEventList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		
 		spin1.setAdapter(adapter);
@@ -906,7 +884,7 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 					int position, long id) {
 				// TODO Auto-generated method stub
 				//get which player has been attributed to an event
-				getPlayer = (int)id;
+				getEvent = (int)id;
 			}
 
 			@Override
