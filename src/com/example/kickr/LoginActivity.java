@@ -148,6 +148,8 @@ public class LoginActivity extends Base_Activity
 			i.putExtra("Competition", competition);
 			i.putExtra("Referee", referee);
 			startActivity(i);
+			//destroy the activity
+			finish();
 			
 		}
 		catch (Exception e) 

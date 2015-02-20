@@ -72,7 +72,7 @@ public class Fixtures extends Base_Activity
 						il.removeAllViews();
 						getData();
 					}
-				},3000);
+				},6000);
 			}
 		});
 		
@@ -85,8 +85,6 @@ public class Fixtures extends Base_Activity
 		GetAndPostDataToServer getFixtures = new GetAndPostDataToServer();
 		
 		String jsonArrayString = getFixtures.doInBackground("getAllFixtures.php").toString();
-		
-		Log.e("String",jsonArrayString);
 		
 		if(jsonArrayString.equals("No Connection"))
 		{
@@ -154,6 +152,8 @@ public class Fixtures extends Base_Activity
 								i.putExtra("Date and Time", dateTime);
 								//start activity and pass in the bundle of information
 								startActivity(i);
+								
+								finish();
 							} 
 							catch (JSONException e) 
 							{

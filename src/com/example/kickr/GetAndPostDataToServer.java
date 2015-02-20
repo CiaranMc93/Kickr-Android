@@ -30,6 +30,8 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,6 +52,9 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 	
 	int minute;
 	String url;
+	
+	//thread handler
+	private Handler matchUpdater = new Handler();
 	
 	boolean isMatchOver = false;
 	
@@ -212,7 +217,6 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 				in.close();
 
 				String note = sb.toString();
-
 				return note;
 			}
 
@@ -331,8 +335,7 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 		if (hasActiveInternetConnection()) 
 		{
 			// TODO Auto-generated method stub
-			String json = sendJson(params, php).toString();
-			return json;
+			return sendJson(params,php).toString();
 		} 
 		else 
 		{
@@ -346,7 +349,8 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 		if(hasActiveInternetConnection())
 		{
 			// TODO Auto-generated method stub
-			return createEvent().toString();
+			matchUpdater.postDelayed(createEvent, 0);
+			return "Event Created";
 		} 
 		else 
 		{
@@ -354,4 +358,12 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 		}
 		
 	}
+	
+	private Runnable createEvent = new Runnable() 
+	{
+		public void run() 
+		{
+			createEvent();
+		}
+	};
 }

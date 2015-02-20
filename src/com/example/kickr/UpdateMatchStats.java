@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,13 +50,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListener, OnGestureListener, SensorEventListener {
+public class UpdateMatchStats extends Activity implements OnDoubleTapListener, OnGestureListener, SensorEventListener {
 
 	private GestureDetectorCompat mDetector;
 	private static int TAKE_PICTURE = 1;
 	private Uri imageUri;
-	
-	//booleans for goal,point,wide
 
 	
 	//boolean for if a player was selected of not
@@ -208,9 +207,11 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		
 		homeAttack = false;
 		awayAttack = false;
+		isOver = false;
 		
 		//default home team to have posession
-		homeTeamStats = true;
+		homeTeamStats = false;
+		awayTeamStats = false;
 		
 		swipeUpdate = (Button) findViewById(R.id.updateUser);
 		
@@ -395,13 +396,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 	{
 		if(velocityX > 0 && velocityY > 0)
 		{
-			if(update == false || isOver == true)
+			if(update == false)
 			{
-				//cannot update if match is over
-				if(isOver == true)
-				{
-					Toast.makeText(UpdateMatchStats.this, "Match is already over", Toast.LENGTH_SHORT).show();
-				}
 			}
 			else
 			{
@@ -436,13 +432,8 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		}
 		else if(velocityX < 0 && velocityY < 0)
 		{
-			if(update == false || isOver == true)
+			if(update == false)
 			{
-				//cannot update if match is over
-				if(isOver == true)
-				{
-					Toast.makeText(UpdateMatchStats.this, "Match is already over", Toast.LENGTH_SHORT).show();
-				}
 			}
 			else
 			{
@@ -488,6 +479,14 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		//make sure there is a condition that doesnt allow goals to be updated
 		if (homeAttack == false && awayAttack == false) 
 		{
+			if(awayTeamStats)
+			{
+				selectMatchOption(awayTeam,false);
+			}
+			else
+			{
+				selectMatchOption(homeTeam,false);
+			}
 			
 		} 
 		else 
@@ -495,15 +494,14 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			//update home and away goals where the condition is true
 			if (homeAttack == true) 
 			{
-				//send this data to the dialog so an event can be created
-				createAcceptDialogBox(homeTeam);
+				//have different options for a long press
+				selectMatchOption(homeTeam,true);
 			}
 
-			if (awayAttack == true) 
+			if(awayAttack == true) 
 			{
-				//send this data to the dialog so an event can be created
-				createAcceptDialogBox(awayTeam);
-				
+				//have different options for a long press
+				selectMatchOption(awayTeam,true);
 			}
 		}
 	}
@@ -587,11 +585,25 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 		String note = sendMatchData.doInBackground(createMatch, "insertInto.php").toString();
 		
 		Toast.makeText(UpdateMatchStats.this, note, Toast.LENGTH_SHORT).show();
+		
+		String ended = "Match has already been created";
+		
+		if(note.equals(ended))
+		{
+			timeSwapBuff += timeInMilliseconds;
+			customHandler.removeCallbacks(updateTimerThread);
+			
+			//pass the match id to the fixture information
+			Intent i = new Intent(getApplicationContext(), PreviousMatches.class);
+			startActivity(i);
+			//destroy the acitivity
+			finish();
+		}
 	}
 	
 	public void sendData(int mins)
 	{
-		if(isOver == true)
+		if(isOver == false)
 		{
 			//create the json object that is going to update the database with its contents
 			JSONObject obj = new JSONObject();
@@ -621,12 +633,46 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 			String note = sendMatchData.doInBackground(obj, "updateMatches.php").toString();
 			
 			Toast.makeText(UpdateMatchStats.this, note, Toast.LENGTH_SHORT).show();
-			
 		}
 		else
 		{
-			//let user know that the match is over
+			//create the json object that is going to update the database with its contents
+			JSONObject obj = new JSONObject();
+			try 
+			{
+				obj.put("FixtureID", fixture_id);
+				obj.put("MatchID", matchID);
+				obj.put("teamAPoints", teamAPoints);
+				obj.put("teamBPoints", teamBPoints);
+				obj.put("teamAGoals", teamAGoals);
+				obj.put("teamBGoals", teamBGoals);
+				obj.put("homehandPasses", homehandPasses);
+				obj.put("awayhandPasses", awayhandPasses);
+				obj.put("matchMins", mins);
+				obj.put("isOver", isOver);
+				obj.put("teamAWides", teamAWides);
+				obj.put("teamBWides", teamBWides);
+			} 
+			catch (JSONException e1) 
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			GetAndPostDataToServer sendMatchData = new GetAndPostDataToServer();
+			
+			sendMatchData.doInBackground(obj, "updateMatches.php");
+
 			Toast.makeText(UpdateMatchStats.this, "Match is now over", Toast.LENGTH_SHORT).show();
+			
+			timeSwapBuff += timeInMilliseconds;
+			customHandler.removeCallbacks(updateTimerThread);
+			
+			//pass the match id to the fixture information
+			Intent i = new Intent(getApplicationContext(), PreviousMatches.class);
+			startActivity(i);
+			//destroy the acitivity
+			finish();
 		}
 	}
 	
@@ -724,7 +770,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 							{
 							case 0:
 								teamAPoints++;
-								Log.e("GotHere","Home " + teamAPoints);
 								pitch1.setImageResource(R.drawable.away_goal_kick);
 								swipeUpdate.setText(homeTeam + " scored");
 								homePoints.setText(" " + teamAPoints);
@@ -753,6 +798,21 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 								Toast.makeText(UpdateMatchStats.this, success, Toast.LENGTH_SHORT).show();
 							case 1:
 								teamAWides++;
+								pitch1.setImageResource(R.drawable.away_goal_kick);
+								
+								//reset variables
+								homeAttack = false;
+								awayTeamStats = false;
+								homeTeamStats = false;
+								
+								swipeUpdate.setText("Goal kick to " + awayTeam);
+								
+								//reset the score pass counter to be 0
+								countPassesToScore = 0;
+								
+								//reset the swipe counters for both left and right sides
+								countRightSwipes = 0;
+								countLeftSwipes = 0;
 								break;
 							case 2:
 								teamAGoals++;
@@ -789,7 +849,6 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 							{
 							case 0:
 								teamBPoints++;
-								Log.e("GotHere","Away" + teamBPoints);
 								pitch1.setImageResource(R.drawable.home_goal_kick);
 								swipeUpdate.setText(awayTeam + " scored");
 								awayPoints.setText(" " + teamBPoints);
@@ -818,6 +877,20 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 								break;
 							case 1:
 								teamBWides++;
+								pitch1.setImageResource(R.drawable.home_goal_kick);
+								
+								//reset variables
+								homeAttack = false;
+								awayTeamStats = false;
+								homeTeamStats = false;
+								
+								swipeUpdate.setText("Goal kick to " + homeTeam);
+								
+								//reset the score pass counter to be 0
+								countPassesToScore = 0;
+								//reset the swipe counters for both left and right sides
+								countRightSwipes = 0;
+								countLeftSwipes = 0;
 								break;
 							case 2:
 								teamBGoals++;
@@ -885,6 +958,116 @@ public class UpdateMatchStats extends Base_Activity implements OnDoubleTapListen
 				// TODO Auto-generated method stub
 				//get which player has been attributed to an event
 				getEvent = (int)id;
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		return false;
+		
+	}
+	
+	@SuppressLint("NewApi")
+	private boolean selectMatchOption(String teamName,Boolean inAttack)
+	{
+		
+		final ArrayList<String> selectEventList = new ArrayList<String>();
+		
+		if(inAttack)
+		{
+			selectEventList.add("45");
+			selectEventList.add("Free Kick");
+			selectEventList.add("Penalty");
+			selectEventList.add("Yellow Card");
+			selectEventList.add("Red Card");
+			selectEventList.add("Black Card");
+			selectEventList.add("Substitution");
+		}
+		else
+		{
+			selectEventList.add("Free Kick");
+			selectEventList.add("Yellow Card");
+			selectEventList.add("Red Card");
+			selectEventList.add("Black Card");
+			selectEventList.add("Substitution");
+		}
+		
+		
+		//create the alert dialog
+		dialogBuilder = new AlertDialog.Builder(this);
+		//create the layout that the alert will eventually get
+		LayoutInflater inflater = this.getLayoutInflater();
+		//create the view for the layout
+		View v = inflater.inflate(R.layout.spinner_layout, null);
+		//set title, add the view to the alert, set the positive button to have ok and cancel.
+		dialogBuilder.setTitle("Select Event");
+		dialogBuilder.setView(v);
+		dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() 
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which) 
+			{
+				if (homeTeamStats == true) 
+				{
+					//switch statement based off of what the user selected
+					switch(getEvent)
+					{
+					case 0:
+						
+					}
+				}
+				else
+				{
+					//switch statement based off of what the user selected
+					switch(getEvent)
+					{
+					case 0:
+					}
+				}
+			}
+			
+		});
+		
+		//cancel button
+		dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() 
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which) 
+			{
+				// TODO Auto-generated method stub
+				Toast.makeText(UpdateMatchStats.this, "You cancelled player selection", Toast.LENGTH_SHORT).show();
+			}
+		});
+		
+		//create a dialog box
+		AlertDialog dialogCreate = dialogBuilder.create();
+		dialogCreate.show();
+		
+		//create a new spinner to hold the players information
+		Spinner spin1 = (Spinner)v.findViewById(R.id.spinner);
+		
+		
+		//create the string adapter to hold the list of names coming from the database
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, selectEventList);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		
+		spin1.setAdapter(adapter);
+		
+		spin1.setOnItemSelectedListener(new OnItemSelectedListener(){
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				// TODO Auto-generated method stub
+				//get which player has been attributed to an event
+				getEvent = (int)id;
+				String name = selectEventList.get((int)id);
+				
+				Log.e("Event name",name);
 			}
 
 			@Override

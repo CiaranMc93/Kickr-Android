@@ -87,6 +87,7 @@ public class FixtureInfoActivity extends Base_Activity
 				Intent i = new Intent(getApplicationContext(), TeamOverall.class);
 				i.putExtra("Home",homeTeam);
 				startActivity(i);
+				finish();
 				
 				
 			}
@@ -100,6 +101,7 @@ public class FixtureInfoActivity extends Base_Activity
 				Intent i = new Intent(getApplicationContext(), TeamOverall.class);
 				i.putExtra("Away", awayTeam);
 				startActivity(i);
+				finish();
 				
 			}
 		});
@@ -117,6 +119,7 @@ public class FixtureInfoActivity extends Base_Activity
 				i.putExtra("Competition", comp);
 				i.putExtra("Referee", ref);
 				startActivity(i);
+				finish();
 				
 			}
 		});
