@@ -19,12 +19,6 @@
     <string name="venue">Venue</string>
     <string name="comp">Competition</string>
     <string name="livematches">Live Matches</string>
-    <string name="enterPlayers">Enter Players</string>
-    <string name="goalie">Goalkeeper</string>
-    <string name="rcb">Right Corner Back</string>
-    <string name="rwf">Right Wing Forward</string>
-    <string name="ff">Full Forward</string>
-    <string name="mf">Midfield</string>
     <string name="title_activity_attendee">Kickr</string>
     <string name="title_activity_match_updates">Kickr</string>
     <string name="title_activity_favourites">Kickr</string>

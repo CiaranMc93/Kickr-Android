@@ -34,6 +34,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector.OnDoubleTapListener;
@@ -55,11 +56,18 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 	private GestureDetectorCompat mDetector;
 	private static int TAKE_PICTURE = 1;
 	private Uri imageUri;
-
 	
-	//boolean for if a player was selected of not
-	boolean selectedAPlayer;
-	boolean didNotSelect;
+	//create a notification
+	/*
+	NotificationCompat.Builder mBuilder =
+		    new NotificationCompat.Builder(this)
+		    .setSmallIcon(R.drawable.ic_launcher)
+		    .setContentTitle("No Activity in 3 minutes")
+		    .setContentText("Update Match");
+		    */
+	
+	//boolean to make sure handpasses isnt updated with taps when not allowed
+	Boolean isDialog;
 	
 	Boolean sendTrue = false;
 	int matchID;
@@ -167,7 +175,10 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 	int redACards;
 	int blackACards;
 	int teamAWides;
-	int teamBWides;
+	int fortyFiveA;
+	int freeKicksA;
+	int penaltyA;
+	int subA;
 	
 	//away team
 	int teamBPoints;
@@ -175,6 +186,11 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 	int yellowBCards;
 	int redBCards;
 	int blackBCards;
+	int teamBWides;
+	int fortyFiveB;
+	int freeKicksB;
+	int penaltyB;
+	int subB;
 	
 	//is match over?
 	Boolean isOver = false;
@@ -264,9 +280,16 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 			public void onClick(View v) 
 			{
 				// TODO Auto-generated method stub
-				isOver = true;	
-				sendData(minutes);
-				
+				if(minutes < 5)
+				{
+					isOver = true;	
+					Toast.makeText(UpdateMatchStats.this, "Match is only " + minutes + " in", Toast.LENGTH_SHORT).show();
+				}
+				else
+				{
+					Toast.makeText(UpdateMatchStats.this, "Match is over", Toast.LENGTH_SHORT).show();
+					sendData(minutes);
+				}	
 			}
 		});
 		
@@ -370,6 +393,11 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 			int mins = secs / 60;
 			secs = secs % 60;
 			//update the display string
+			
+			//if(mins == 3)
+			//{
+				//mBuilder.notify();
+			//}
 
 			noteHandler.postDelayed(this, 0);	
 		}
@@ -412,6 +440,10 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 					homeTeamStats = true;
 					//reset the attack bool
 					homeAttack = false;
+					
+					//if there is a change in the match then reset the notification timer
+					updatedTimeNote = 0;
+					timeInMillisecondsNote = 0;
 				}
 				
 				if(countRightSwipes == 2)
@@ -451,6 +483,10 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 					homeTeamStats = false;
 					//reset the attack bools also
 					awayAttack = false;
+					
+					//if there is a change in the match then reset the notification timer
+					updatedTimeNote = 0;
+					timeInMillisecondsNote = 0;
 				}
 				
 				if(countLeftSwipes == 2)
@@ -520,22 +556,29 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 		}
 		else
 		{
-			//count the handpasses for each team
-			if(homeTeamStats == true)
+			if(isDialog)
 			{
-				//count all passes for home team
-				homehandPasses++;
-				//count the passes it takes to score
-				countPassesToScore++;
+				
 			}
-			
-			if(awayTeamStats == true)
+			else
 			{
-				//count all passes for away team
-				awayhandPasses++;	
-				//count the passes it takes to score
-				countPassesToScore++;
-			}		
+				//count the handpasses for each team
+				if(homeTeamStats == true)
+				{
+					//count all passes for home team
+					homehandPasses++;
+					//count the passes it takes to score
+					countPassesToScore++;
+				}
+				
+				if(awayTeamStats == true)
+				{
+					//count all passes for away team
+					awayhandPasses++;	
+					//count the passes it takes to score
+					countPassesToScore++;
+				}	
+			}	
 		};
 		return true;
 	}
@@ -586,8 +629,7 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 		
 		Toast.makeText(UpdateMatchStats.this, note, Toast.LENGTH_SHORT).show();
 		
-		String ended = "Match has already been created";
-		
+		/*
 		if(note.equals(ended))
 		{
 			timeSwapBuff += timeInMilliseconds;
@@ -599,6 +641,7 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 			//destroy the acitivity
 			finish();
 		}
+		*/
 	}
 	
 	public void sendData(int mins)
@@ -621,6 +664,22 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 				obj.put("isOver", isOver);
 				obj.put("teamAWides", teamAWides);
 				obj.put("teamBWides", teamBWides);
+				//add these to php
+				obj.put("yellowCardsA", yellowACards);
+				obj.put("redCardsA", redACards);
+				obj.put("blackACards", blackACards);
+				obj.put("blackBCards", blackBCards);
+				obj.put("yellowCardsB", yellowBCards);
+				obj.put("redCardsB", redBCards);
+				obj.put("subsA", subA);
+				obj.put("fortyFiveA", fortyFiveA);
+				obj.put("subsB", subB);
+				obj.put("fortyFiveB", fortyFiveB);
+				obj.put("penaltyA", penaltyA);
+				obj.put("penaltyB", penaltyB);
+				obj.put("freeKicksA", freeKicksA);
+				obj.put("freeKicksB", freeKicksB);
+				
 			} 
 			catch (JSONException e1) 
 			{
@@ -652,6 +711,21 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 				obj.put("isOver", isOver);
 				obj.put("teamAWides", teamAWides);
 				obj.put("teamBWides", teamBWides);
+				//add these to php
+				obj.put("yellowCardsA", yellowACards);
+				obj.put("redCardsA", redACards);
+				obj.put("blackACards", blackACards);
+				obj.put("blackBCards", blackBCards);
+				obj.put("yellowCardsB", yellowBCards);
+				obj.put("redCardsB", redBCards);
+				obj.put("subsA", subA);
+				obj.put("fortyFiveA", fortyFiveA);
+				obj.put("fortyFiveB", fortyFiveB);
+				obj.put("penaltyA", penaltyA);
+				obj.put("penaltyB", penaltyB);
+				obj.put("freeKicksA", freeKicksA);
+				obj.put("freeKicksB", freeKicksB);
+				
 			} 
 			catch (JSONException e1) 
 			{
@@ -662,14 +736,15 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 			GetAndPostDataToServer sendMatchData = new GetAndPostDataToServer();
 			
 			sendMatchData.doInBackground(obj, "updateMatches.php");
-
-			Toast.makeText(UpdateMatchStats.this, "Match is now over", Toast.LENGTH_SHORT).show();
 			
 			timeSwapBuff += timeInMilliseconds;
 			customHandler.removeCallbacks(updateTimerThread);
 			
 			//pass the match id to the fixture information
 			Intent i = new Intent(getApplicationContext(), PreviousMatches.class);
+			i.putExtra("Home",homeTeam);
+			i.putExtra("Away",awayTeam);
+			i.putExtra("MatchID", matchID);
 			startActivity(i);
 			//destroy the acitivity
 			finish();
@@ -741,6 +816,7 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 	@SuppressLint("NewApi")
 	private boolean createAcceptDialogBox(String teamName)
 	{
+		isDialog = true;
 		
 		final ArrayList<String> selectEventList = new ArrayList<String>();
 		
@@ -765,6 +841,7 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 			{
 						if (homeTeamStats == true) 
 						{
+							
 							//switch statement based off of what the user selected
 							switch(getEvent)
 							{
@@ -974,28 +1051,17 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 	@SuppressLint("NewApi")
 	private boolean selectMatchOption(String teamName,Boolean inAttack)
 	{
+		isDialog = true;
 		
 		final ArrayList<String> selectEventList = new ArrayList<String>();
-		
-		if(inAttack)
-		{
-			selectEventList.add("45");
-			selectEventList.add("Free Kick");
-			selectEventList.add("Penalty");
-			selectEventList.add("Yellow Card");
-			selectEventList.add("Red Card");
-			selectEventList.add("Black Card");
-			selectEventList.add("Substitution");
-		}
-		else
-		{
-			selectEventList.add("Free Kick");
-			selectEventList.add("Yellow Card");
-			selectEventList.add("Red Card");
-			selectEventList.add("Black Card");
-			selectEventList.add("Substitution");
-		}
-		
+
+		selectEventList.add("45");
+		selectEventList.add("Free Kick");
+		selectEventList.add("Penalty");
+		selectEventList.add("Yellow Card");
+		selectEventList.add("Red Card");
+		selectEventList.add("Black Card");
+		selectEventList.add("Substitution");
 		
 		//create the alert dialog
 		dialogBuilder = new AlertDialog.Builder(this);
@@ -1011,21 +1077,109 @@ public class UpdateMatchStats extends Activity implements OnDoubleTapListener, O
 			@Override
 			public void onClick(DialogInterface dialog, int which) 
 			{
-				if (homeTeamStats == true) 
+				if (homeTeamStats) 
 				{
 					//switch statement based off of what the user selected
 					switch(getEvent)
 					{
 					case 0:
+						fortyFiveA++;
+						//reset the posession stats, goal kick switch
+						pitch1.setImageResource(R.drawable.away_goal_kick);
+						//reset variables
+						homeAttack = false;
+						awayTeamStats = false;
+						homeTeamStats = false;
 						
+						swipeUpdate.setText("Goal kick to " + awayTeam);
+						//reset the score pass counter to be 0
+						countPassesToScore = 0;
+						//reset the swipe counters for both left and right sides
+						countRightSwipes = 0;
+						countLeftSwipes = 0;
+						break;
+					case 1:
+						freeKicksA++;
+						//reset variables
+						homeAttack = false;
+						awayTeamStats = false;
+						homeTeamStats = false;
+						//reset the swipe counters for both left and right sides
+						countRightSwipes = 0;
+						countLeftSwipes = 0;
+						break;
+					case 2:
+						penaltyA++;
+						//reset the posession stats, goal kick switch
+						createAcceptDialogBox(homeTeam);
+						break;
+					case 3:
+						yellowACards++;
+						break;
+					case 4:
+						redACards++;
+						break;
+					case 5:
+						blackACards++;
+						break;
+					case 6:
+						subA++;
+						break;
+					default:
+						break;
 					}
 				}
 				else
 				{
 					//switch statement based off of what the user selected
+					//switch statement based off of what the user selected
 					switch(getEvent)
 					{
 					case 0:
+						fortyFiveB++;
+						//reset the posession stats, goal kick switch
+						pitch1.setImageResource(R.drawable.home_goal_kick);
+						//reset variables
+						awayAttack = false;
+						awayTeamStats = false;
+						homeTeamStats = false;
+						
+						swipeUpdate.setText("Goal kick to " + homeTeam);
+						//reset the score pass counter to be 0
+						countPassesToScore = 0;
+						//reset the swipe counters for both left and right sides
+						countRightSwipes = 0;
+						countLeftSwipes = 0;
+						break;
+					case 1:
+						freeKicksB++;
+						//reset variables
+						awayAttack = false;
+						awayTeamStats = false;
+						homeTeamStats = false;
+						//reset the swipe counters for both left and right sides
+						countRightSwipes = 0;
+						countLeftSwipes = 0;
+						break;
+					case 2:
+						penaltyB++;
+						//reset the posession stats, goal kick switch
+						createAcceptDialogBox(awayTeam);
+						break;
+					case 3:
+						yellowBCards++;
+						break;
+					case 4:
+						redBCards++;
+						break;
+					case 5:
+						blackBCards++;
+						break;
+					case 6:
+						subB++;
+						break;
+					default:
+						break;
 					}
 				}
 			}

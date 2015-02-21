@@ -217,6 +217,7 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 				in.close();
 
 				String note = sb.toString();
+				Log.e("JSON",note);
 				return note;
 			}
 
