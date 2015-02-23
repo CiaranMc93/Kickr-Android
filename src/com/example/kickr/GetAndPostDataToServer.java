@@ -46,6 +46,7 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 	String team;
 	
 	int match;
+	int countPassestoScore;
 	
 	boolean p;
 	boolean g;
@@ -77,7 +78,7 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 	    return false;
 	}
 	
-	public GetAndPostDataToServer(String matchID, boolean point, boolean goal,int mins,String teamName) 
+	public GetAndPostDataToServer(String matchID, boolean point, boolean goal,int mins,String teamName,int countPasses) 
 	{
 		// TODO Auto-generated constructor stub
 		match = Integer.parseInt(matchID);
@@ -85,6 +86,7 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 		g = goal;
 		minute = mins;
 		team = teamName;
+		countPassestoScore = countPasses;
 		
 	}
 	
@@ -120,6 +122,7 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 			obj.put("Goal", g);
 			obj.put("Minutes", minute);
 			obj.put("TeamName", team);
+			obj.put("CountPasses", countPassestoScore);
 		} 
 		catch (JSONException e1) 
 		{
@@ -217,7 +220,7 @@ public class GetAndPostDataToServer extends AsyncTask<Void, Void, String>
 				in.close();
 
 				String note = sb.toString();
-				Log.e("JSON",note);
+				//Log.e("JSON",note);
 				return note;
 			}
 

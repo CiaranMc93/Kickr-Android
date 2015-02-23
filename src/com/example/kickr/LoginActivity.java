@@ -137,20 +137,25 @@ public class LoginActivity extends Base_Activity
 			//close the buffer
 			in.close();
 			
-			isSignedIn = true;
-			
-			Intent i = new Intent(getApplicationContext(), UpdateMatchStats.class);
-			i.putExtra("FixtureID", fixture_id);
-			i.putExtra("isSignedIn", isSignedIn);
-			i.putExtra("Home", homeTeam);
-			i.putExtra("Away", awayTeam);
-			i.putExtra("Venue", venue);
-			i.putExtra("Competition", competition);
-			i.putExtra("Referee", referee);
-			startActivity(i);
-			//destroy the activity
-			finish();
-			
+			if(sb.toString().length() > 20)
+			{
+				Intent i = new Intent(getApplicationContext(), UpdateMatchStats.class);
+				i.putExtra("FixtureID", fixture_id);
+				i.putExtra("isSignedIn", isSignedIn);
+				i.putExtra("Home", homeTeam);
+				i.putExtra("Away", awayTeam);
+				i.putExtra("Venue", venue);
+				i.putExtra("Competition", competition);
+				i.putExtra("Referee", referee);
+				startActivity(i);
+				//destroy the activity
+				finish();
+			}
+			else
+			{
+				loginTrue = false;
+				throw new Exception();
+			}
 		}
 		catch (Exception e) 
 		{
@@ -163,14 +168,6 @@ public class LoginActivity extends Base_Activity
 				btn.setLayoutParams((new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT)));
 				btn.setText(loginFail);
 				il.addView(btn);
-				
-				btn.setOnClickListener(new View.OnClickListener() 
-				{
-					public void onClick(View v) 
-					{
-						
-					}
-				});
 			}
 			
 		}
